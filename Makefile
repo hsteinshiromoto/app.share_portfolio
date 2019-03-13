@@ -10,7 +10,7 @@ docker_image = $(docker_user)/$(repo_name):$(tag)
 build_date=$(shell date +%Y%m%d-%H:%M:%S)
 
 build:
-	@echo "Building Container $(docker_image)"
-	docker build --build-arg BUILD_DATE=$(build_date) -t $(docker_image)  . 
+	@echo "Building Container $(docker_image) for repository $(repo_name)"
+	docker build --build-arg BUILD_DATE=$(build_date) --build-arg REPO_NAME=$(repo_name) -t $(docker_image)  . 
 
 .PHONY: build

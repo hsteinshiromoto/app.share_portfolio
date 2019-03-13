@@ -1,5 +1,2 @@
 pandas_datareader
-pandas
-scipy
-matplotlib
 seaborn
