@@ -11,15 +11,15 @@ ENV HOME /home/$REPO_NAME
 # Create the "home" folder 
 RUN mkdir $HOME
 
-LABEL org.label-schema.build-date=$BUILD_DATE \
-      maintainer="Dr Humberto STEIN SHIROMOTO <h.stein.shiromoto@gmail.com>"
-
 # Copy necessary files
 COPY requirements.txt $HOME
 
-# Set workdir
-WORKDIR $HOME
-
 #Install requirements from text file
-
 RUN pip install -r $HOME/requirements.txt
+
+# Expose Ports
+EXPOSE 5000
+
+LABEL org.label-schema.build-date=$BUILD_DATE \
+      maintainer="Dr Humberto STEIN SHIROMOTO <h.stein.shiromoto@gmail.com>"
+
