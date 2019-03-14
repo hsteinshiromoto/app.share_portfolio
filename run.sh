@@ -1,3 +1,4 @@
+#!/usr/bin/env bash
 # !/bin/bash
 
 repo_name=$(git rev-parse --show-toplevel)
@@ -15,28 +16,47 @@ d_folder_code=/home/${repo_name}
 
 container_id=$(docker ps -qf "ancestor=${docker_image}")
 
-if [ -z "$container_id" ] 
+if [ $1 = 'clean' ]
 then
 
-	docker tag ${docker_image} ${repo_name}
-	echo "Creating container... "
-	docker run -d -P -v ${h_folder_code}:${d_folder_code} ${docker_image} 
+    container_ids=$(docker ps -aqf "ancestor=${docker_image}")
 
-	sleep 2
-    echo "DONE."
+    if [ -z ${container_ids} ]
+    then
+        echo "No containers running"
 
-	container_id=$(docker ps -qf "ancestor=${docker_image}")
+    else
+
+        echo "Stopping and removing containers ${container_ids}"
+        docker kill ${container_ids}
+        docker rm ${container_ids}
+
+    fi
 
 else
+    if [ -z "$container_id" ]
+    then
 
-	container_id=$(docker ps -qf "ancestor=${docker_image}")
-	echo "Container already exists"
+        docker tag ${docker_image} ${repo_name}
+        echo "Creating container... "
+        docker run -d -P -v ${h_folder_code}:${d_folder_code} ${docker_image}
 
+        sleep 2
+        echo "DONE."
+
+        container_id=$(docker ps -qf "ancestor=${docker_image}")
+
+    else
+
+        container_id=$(docker ps -qf "ancestor=${docker_image}")
+        echo "Container already exists"
+
+    fi
+
+    port=$(docker inspect ${container_id} | grep '"HostPort":' | sed -e 's/ *"HostPort": "\(\w\+\)"/\1/')
+    token=$(./get_jupyter_token.sh)
+
+    echo -e "\tContainer ID: ${container_id}"
+    echo -e "\tListening port: ${port}"
+    echo -e "\tJupyter token: ${token}\n"
 fi
-
-port=$(docker inspect ${container_id} | grep '"HostPort":' | sed -e 's/ *"HostPort": "\(\w\+\)"/\1/')
-token=$(./get_jupyter_token.sh)
-
-echo -e "\tContainer ID: ${container_id}"
-echo -e "\tListening port: ${port}"
-echo -e "\tJupyter token: ${token}\n"
