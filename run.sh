@@ -33,6 +33,20 @@ then
 
     fi
 
+    container_ids=$(docker ps -a | grep pycharm | awk  '{ print $1 }')
+
+    if [ -z ${container_ids} ]
+    then
+        echo "No Pycharm containers running"
+
+    else
+
+        echo "Stopping and removing containers ${container_ids}"
+        docker kill ${container_ids}
+        docker rm ${container_ids}
+
+    fi
+
 else
     if [ -z "$container_id" ]
     then
