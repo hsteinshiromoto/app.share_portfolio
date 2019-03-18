@@ -4,10 +4,15 @@
 
 .cache/*
 .local/*
+.bash_history
+
+
 
 ### JupyterNotebook ###
 .ipynb_checkpoints
 */.ipynb_checkpoints/*
+
+.ipython/*
 
 # Remove previous ipynb_checkpoints
 #   git rm -r .ipynb_checkpoints/
