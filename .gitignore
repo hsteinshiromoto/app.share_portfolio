@@ -6,7 +6,7 @@
 .local/*
 .bash_history
 
-
+.jupyter/*
 
 ### JupyterNotebook ###
 .ipynb_checkpoints
