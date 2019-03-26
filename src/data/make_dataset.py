@@ -1,8 +1,7 @@
 import pandas_datareader as pdr
 import pandas as pd
-import numpy as np
 
-from datetime import datetime, timedelta
+from datetime import datetime
 
 def get_data(stocks, metrics=None, source='yahoo', start='2016-01-01', end=None):
     """
