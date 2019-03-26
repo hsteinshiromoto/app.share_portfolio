@@ -47,6 +47,11 @@ def get_data(stocks, metrics=None, source='yahoo', start='2016-01-01', end=None)
     return data
 
 
+def save_data(data):
+
+    pass
+
+
 if __name__ == "__main__":
 
     portfolio = ["WES", 'QBE']
