@@ -12,7 +12,7 @@ def get_data(stocks, metrics=None, source='yahoo', start='2016-01-01', end=None)
     :param source: str., optional
     :param start: str., optional
     :param end: str., optional
-    :return:
+    :return: pandas.DataFrame
     """
 
     default_metrics = ["High", "Low", "Open", "Close", "Adj Close", "Volume"]
