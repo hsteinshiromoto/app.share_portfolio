@@ -1,7 +1,10 @@
 import pandas_datareader as pdr
 import pandas as pd
+import os
 
 from datetime import datetime
+
+from src.base import get_paths
 
 def get_data(stocks, metrics=None, source='yahoo', start='2016-01-01', end=None):
     """
@@ -47,9 +50,26 @@ def get_data(stocks, metrics=None, source='yahoo', start='2016-01-01', end=None)
     return data
 
 
-def save_data(data):
+def save_data(data, filename=None, path=None):
+    """
 
-    pass
+    :param data: pandas.DataFrame
+    :param filename: str., optional
+    :param path: str., optional
+    :return:
+    """
+
+    if not path:
+        paths = get_paths()
+        path = paths.get("data").get("raw")
+
+    if not filename:
+        filename = str(datetime.now().date())
+
+    full_filename = os.path.join(path, filename)
+    data.to_csv(full_filename, index=False)
+
+    return None
 
 
 if __name__ == "__main__":
