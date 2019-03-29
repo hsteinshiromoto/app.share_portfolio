@@ -21,8 +21,7 @@ def get_file(path, pattern=None, extension=None, latest=True):
 
     if list_file_names == []:
         msg = "Expected files in {}. Found none.".format(path)
-        warnings.warn(msg)
-        return None
+        raise IOError(msg)
 
     elif pattern:
         list_pattern = [file_name for file_name in
@@ -33,8 +32,7 @@ def get_file(path, pattern=None, extension=None, latest=True):
         if list_file_names == []:
             msg = "Expected files with pattern {0} in {1}. Found none."\
                 .format(pattern, path)
-            warnings.warn(msg)
-            return None
+            raise IOError(msg)
 
     if latest == True:
         output = os.path.basename(max(list_file_names,
