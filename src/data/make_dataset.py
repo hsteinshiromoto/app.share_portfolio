@@ -74,6 +74,14 @@ def save_data(data, filename=None, path=None):
 
 
 def load_latest_date(filename=None, path=None):
+    """
+    Get the latest date of the existing dataset
+
+    :param filename: str., optional
+    :param path: str., optional
+
+    :return date: datetime
+    """
 
     if not path:
         paths = get_paths()
