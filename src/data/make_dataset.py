@@ -62,7 +62,7 @@ def save_data(data, filename=None, path=None):
 
     if not path:
         paths = get_paths()
-        path = paths.get("data").get("raw")
+        path = paths.get("data").get("interim")
 
     if not filename:
         filename = str(datetime.now().date()) + ".csv"
@@ -85,7 +85,7 @@ def load_previous_dataset(filename=None, path=None):
 
     if not path:
         paths = get_paths()
-        path = paths.get("data").get("raw")
+        path = paths.get("data").get("interim")
 
     try:
         if not filename:
@@ -106,6 +106,8 @@ def load_previous_dataset(filename=None, path=None):
 
 def main(stocks):
 
+    paths = get_paths()
+
     missing_stocks = []
     date_equal = False
 
@@ -117,12 +119,18 @@ def main(stocks):
         latest_date = data.index[-1].date()
         date_equal = latest_date != datetime.now().date()
 
+        full_filename = paths.get("data").get("interim")
+        full_filename = os.path.join(full_filename, "{}.csv".format(latest_date.strftime("%Y-%m-%d")))
+        os.remove(full_filename)
+
     if date_equal & (len(missing_stocks) == 0):
         new_data = get_data(stocks, start=latest_date.strftime("%Y-%m-%d"))
         data = pd.concat([data, new_data])
 
     elif (len(missing_stocks) != 0):
         data = get_data(stocks)
+
+    save_data(data, filename=None, path=None)
 
     return data
 
