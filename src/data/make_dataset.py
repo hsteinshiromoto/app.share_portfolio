@@ -73,7 +73,7 @@ def save_data(data, filename=None, path=None):
     return None
 
 
-def load_latest_date(filename=None, path=None):
+def load_previous_dataset(filename=None, path=None):
     """
     Get the latest date of the existing dataset
 
@@ -94,16 +94,37 @@ def load_latest_date(filename=None, path=None):
     except IOError:
         msg = "Expected data set in {}. Found none.".format(path)
         warnings.warn(msg)
-        date = None
+        data = None
 
     else:
         full_filename = os.path.join(path, filename)
+        data = pd.read_csv(full_filename, index_col=0, header=[0,1])
+        data.index = pd.to_datetime(data.index)
 
-        with open(full_filename, 'r+') as f:
-            lines = f.readlines()
-            date = datetime.strptime(lines[-1:][0].split(",")[0], "%Y-%m-%d")
+    return data
 
-    return date
+
+def main(stocks):
+
+    missing_stocks = []
+    date_equal = False
+
+    data = load_previous_dataset(filename=None, path=None)
+
+    if data is not None:
+        previous_stocks_list = [item[0] for item in data.columns.values.squeeze()]
+        missing_stocks = set(stocks).symmetric_difference(set(previous_stocks_list))
+        latest_date = data.index[-1].date()
+        date_equal = latest_date != datetime.now().date()
+
+    if date_equal & (len(missing_stocks) == 0):
+        new_data = get_data(stocks, start=latest_date.strftime("%Y-%m-%d"))
+        data = pd.concat([data, new_data])
+
+    elif (len(missing_stocks) != 0):
+        data = get_data(stocks)
+
+    return data
 
 if __name__ == "__main__":
 
@@ -115,8 +136,6 @@ if __name__ == "__main__":
     portfolio.extend(candidates)
     portfolio = [item + ".AX" for item in portfolio]
 
-    # data = get_data(portfolio)
+    main(portfolio)
 
-    # save_data(data)
-
-    print(load_latest_date(filename=None, path=None))
+    # print(load_latest_date(filename=None, path=None))
