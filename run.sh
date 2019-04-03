@@ -16,7 +16,7 @@ d_folder_code=/home/${repo_name}
 
 container_id=$(docker ps -qf "ancestor=${docker_image}")
 
-if [ $1 = 'clean' ]
+if [[ $1 = 'clean' ]];
 then
 
     container_ids=$(docker ps -aqf "ancestor=${docker_image}")
@@ -47,8 +47,14 @@ then
 
     fi
 
+elif [[ $1 = "bokeh" ]]
+then
+
+    docker exec -it ${container_id} /bin/bash
+    bokeh serve app/app.py --port 5000 --address 0.0.0.0
+
 else
-    if [ -z "$container_id" ]
+    if [[ -z "$container_id" ]];
     then
 
         docker tag ${docker_image} ${repo_name}

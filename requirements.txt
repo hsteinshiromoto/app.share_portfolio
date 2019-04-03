@@ -2,3 +2,4 @@ pandas_datareader
 seaborn
 bokeh
 flask
+gitpython
