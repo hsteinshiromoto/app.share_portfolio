@@ -16,7 +16,7 @@ d_folder_code=/home/${repo_name}
 
 container_id=$(docker ps -qf "ancestor=${docker_image}")
 
-if [ $1 = 'clean' ]
+if [[ $1 = 'clean' ]];
 then
 
     container_ids=$(docker ps -aqf "ancestor=${docker_image}")
@@ -48,7 +48,7 @@ then
     fi
 
 else
-    if [ -z "$container_id" ]
+    if [[ -z "$container_id" ]];
     then
 
         docker tag ${docker_image} ${repo_name}
