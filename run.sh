@@ -50,7 +50,6 @@ then
 elif [[ $1 = "bokeh" ]]
 then
 
-    docker exec -it ${container_id} /bin/bash
     bokeh serve app/app.py --port 5000 --address 0.0.0.0
 
 else
