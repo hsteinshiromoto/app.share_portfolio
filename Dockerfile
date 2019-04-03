@@ -23,3 +23,4 @@ EXPOSE 5000
 LABEL org.label-schema.build-date=$BUILD_DATE \
       maintainer="Dr Humberto STEIN SHIROMOTO <h.stein.shiromoto@gmail.com>"
 
+WORKDIR $HOME
