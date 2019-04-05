@@ -7,7 +7,7 @@ from datetime import datetime
 
 from src.base import get_paths, get_file
 
-def get_data(stocks, metrics=None, source='yahoo', start='2016-01-01', end=None):
+def get_data(stocks, source, metrics=None, start='2016-01-01', end=None):
     """
 
     :param stocks: list
@@ -104,12 +104,16 @@ def load_previous_dataset(filename=None, path=None):
     return data
 
 
-def main(stocks):
+def main(stocks, source="yahoo"):
+
+    if source.lower() == "yahoo":
+        stocks = [item + ".AX" for item in stocks]
+
+    else:
+        msg = "The source needs to be yahoo."
+        ValueError(msg)
 
     paths = get_paths()
-
-    missing_stocks = []
-    date_equal = False
 
     data = load_previous_dataset(filename=None, path=None)
 
@@ -123,12 +127,12 @@ def main(stocks):
         full_filename = os.path.join(full_filename, "{}.csv".format(latest_date.strftime("%Y-%m-%d")))
         os.remove(full_filename)
 
-    if date_equal & (len(missing_stocks) == 0):
-        new_data = get_data(stocks, start=latest_date.strftime("%Y-%m-%d"))
-        data = pd.concat([data, new_data])
+        if date_equal & (len(missing_stocks) == 0):
+            new_data = get_data(stocks, source, start=latest_date.strftime("%Y-%m-%d"))
+            data = pd.concat([data, new_data])
 
-    elif (len(missing_stocks) != 0):
-        data = get_data(stocks)
+    else:
+        data = get_data(stocks, source)
 
     save_data(data, filename=None, path=None)
 
@@ -142,7 +146,6 @@ if __name__ == "__main__":
                   "VAS", "WOW", "A2M", "MVF"]
 
     portfolio.extend(candidates)
-    portfolio = [item + ".AX" for item in portfolio]
 
     main(portfolio)
 
