@@ -7,32 +7,26 @@ from datetime import datetime
 
 from src.base import get_paths, get_file
 
-def get_data(stocks, source, metric="Close", start='2016-01-01', end=None):
+def get_data(stocks, source, metrics=None, start='2016-01-01', end=None):
     """
 
     :param stocks: list
-    :param metrics: str., optional
+    :param metrics: list, optional
     :param source: str., optional
     :param start: str., optional
     :param end: str., optional
     :return: pandas.DataFrame
     """
 
-    # ---
-    # Todo: For future Use
-    # ---
-    # default_metrics = ["High", "Low", "Open", "Close", "Adj Close", "Volume"]
+    default_metrics = ["High", "Low", "Open", "Close", "Adj Close", "Volume"]
 
-    # if not metrics:
-    #     metrics = ["Close"]
-    #
-    # elif (len(set(default_metrics) - set(metrics)) == len(set(default_metrics))):
-    #     msg = "Expected metrics to be in {0}. Got {1}.".format(default_metrics,
-    #                                                            metrics)
-    #     raise ValueError(msg)
+    if not metrics:
+        metrics = ["Close"]
 
-    # End
-    # ---
+    elif (len(set(default_metrics) - set(metrics)) == len(set(default_metrics))):
+        msg = "Expected metrics to be in {0}. Got {1}.".format(default_metrics,
+                                                               metrics)
+        raise ValueError(msg)
 
     if not end:
         end = '{0}-{1}-{2}'.format(datetime.now().year, datetime.now().month,
@@ -40,15 +34,16 @@ def get_data(stocks, source, metric="Close", start='2016-01-01', end=None):
 
     index = pd.date_range(datetime.strptime(start,"%Y-%m-%d"),
                           datetime.strptime(end, "%Y-%m-%d"), freq='D')
+    columns = pd.MultiIndex.from_product([stocks, metrics])
 
-    # Todo: for future use
-    # columns = pd.MultiIndex.from_product([stocks, metrics])
-
-    data = pd.DataFrame(index=index)
+    data = pd.DataFrame(columns=columns, index=index)
 
     for share in stocks:
-        data.loc[:, share] = pdr.DataReader(share, data_source=source,
-                                            start=start, end=end)[metric]
+        for metric in metrics:
+            data.loc[:, (share, metric)] = pdr.DataReader(share,
+                                                          data_source=source,
+                                                          start=start, end=end)\
+                [metric]
 
     data.dropna(how="all", inplace=True)
     data.sort_index(ascending=True, inplace=True)
@@ -103,9 +98,7 @@ def load_previous_dataset(filename=None, path=None):
 
     else:
         full_filename = os.path.join(path, filename)
-        # Todo: For Future use
-        # data = pd.read_csv(full_filename, index_col=0, header=[0,1])
-        data = pd.read_csv(full_filename, index_col=0)
+        data = pd.read_csv(full_filename, index_col=0, header=[0,1])
         data.index = pd.to_datetime(data.index)
 
     return data
