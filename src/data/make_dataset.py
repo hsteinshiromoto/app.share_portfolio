@@ -7,6 +7,9 @@ from datetime import datetime
 
 from src.base import get_paths, get_file
 
+# Todo: Get real time quote:
+# src https://github.com/pydata/pandas-datareader/issues/44
+
 def get_data(stocks, source, metrics=None, start='2016-01-01', end=None):
     """
 
