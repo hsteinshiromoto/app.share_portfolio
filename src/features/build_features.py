@@ -28,23 +28,16 @@ def calculate_trade_points(prices, mean_prices):
 def get_trade_points(data, feature):
 
     prices = data.loc[:, feature].values
-    mean = data.loc[:, feature].ewm(span=15, adjust=False).mean()
+    data.loc[:, (feature[0], "EWM")] = data.loc[:, feature].ewm(span=15, adjust=False).mean()
+    mean = data.loc[:, (feature[0], "EWM")].values
 
     buy_indices, sell_indices = calculate_trade_points(prices, mean)
 
     mask_buy = data[feature].index[buy_indices]
     mask_sell = data[feature].index[sell_indices]
 
-    if feature is isinstance(tuple):
-        data.loc[mask_buy, (feature[0], "Trade")] = "Buy"
-        data.loc[mask_sell, (feature[0], "Trade")] = "Sell"
-        mask = mask_sell & mask_buy
-        data.loc[~mask, (feature[0], "Trade")] = "Hold"
-
-    else:
-        data.loc[mask_buy, feature + "_Trade"] = "Buy"
-        data.loc[mask_sell, feature + "_Trade"] = "Sell"
-        mask = mask_sell & mask_buy
-        data.loc[~mask, feature +  "_Trade"] = "Hold"
+    data.loc[mask_buy, (feature[0], "Trade")] = "Buy"
+    data.loc[mask_sell, (feature[0], "Trade")] = "Sell"
+    data.loc[:, (feature[0], "Trade")].fillna(value="Hold", inplace=True)
 
     return data
