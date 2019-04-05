@@ -27,6 +27,8 @@ def calculate_trade_points(prices, mean_prices):
 
 def get_trade_points(data, feature):
 
+    # Todo: add for loops to run into each feature
+
     prices = data.loc[:, feature].values
     data.loc[:, (feature[0], "EWM")] = data.loc[:, feature].ewm(span=15, adjust=False).mean()
     mean = data.loc[:, (feature[0], "EWM")].values
