@@ -7,7 +7,6 @@ def moving_average(array, window):
     return moving_average
 
 
-# %%
 def calculate_trade_points(prices, mean_prices):
     """
 
