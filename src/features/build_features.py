@@ -1,6 +1,14 @@
 import numpy as np
 
 def moving_average(array, window):
+    """
+    Calculate simple moving average
+
+    :param array: np.ndarray
+    :param window: int
+    :return: np.ndarray
+    """
+
     weights = np.repeat(1.0, window) / window
     moving_average = np.convolve(array, weights, 'valid')
 
@@ -9,6 +17,7 @@ def moving_average(array, window):
 
 def calculate_trade_points(prices, mean_prices):
     """
+    Calculate if trade point is either: Buy, Sell or Hold
 
     :param prices: 1-dimensional np.array
     :param mean_price: 1-dimensional np.array
@@ -26,6 +35,12 @@ def calculate_trade_points(prices, mean_prices):
 
 
 def get_trade_points(data):
+    """
+    Create new feature named Trade
+
+    :param data: pandas.DataFrame
+    :return: pandas.DataFrame
+    """
 
     for feature in data.columns.values:
 
