@@ -44,5 +44,5 @@ def get_trade_points(data, feature):
         data.loc[:, (feature[0], "Trade")].fillna(value="Hold", inplace=True)
 
     data = data.reindex(sorted(data.columns), axis=1)
-    
+
     return data
