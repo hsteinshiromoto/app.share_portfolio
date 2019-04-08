@@ -51,7 +51,7 @@ elif [[ $1 = "bokeh" ]]
 then
 
     docker exec -i ${container_id} \
-           bash -c "bokeh serve app/app.py --port 5000 --address 0.0.0.0"
+           bash -c "bokeh serve app/app.py --port 5000 --address '0.0.0.0'"
 
 else
     if [[ -z "$container_id" ]];
