@@ -12,6 +12,7 @@ from src.base import get_paths, get_file
 
 def get_data(stocks, source, metrics=None, start='2016-01-01', end=None):
     """
+    Get price values from source
 
     :param stocks: list
     :param metrics: list, optional
@@ -56,6 +57,7 @@ def get_data(stocks, source, metrics=None, start='2016-01-01', end=None):
 
 def save_data(data, filename=None, path=None):
     """
+    Save pandas.dataframe to folder
 
     :param data: pandas.DataFrame
     :param filename: str., optional
@@ -108,6 +110,13 @@ def load_previous_dataset(filename=None, path=None):
 
 
 def main(stocks, source="yahoo"):
+    """
+    Generates dataframe with price values of selected stocks
+
+    :param stocks: list
+    :param source: str., optinal
+    :return: pandas.dataframe
+    """
 
     if source.lower() == "yahoo":
         stocks = [item + ".AX" for item in stocks]
