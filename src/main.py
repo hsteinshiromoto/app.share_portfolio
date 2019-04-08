@@ -20,7 +20,17 @@ def post_processing(data):
 
     trade_shares = subset[mask].dropna()
 
-    return trade_shares
+    if not trade_shares.empty:
+        msg = "Trade the shares {}.".format(trade_shares.index)
+        trade = True
+
+    else:
+        msg = "No trading today :("
+        trade = False
+
+    print(msg)
+
+    return trade
 
 if __name__ == "__main__":
 
@@ -42,6 +52,4 @@ if __name__ == "__main__":
 
     data.to_csv(full_filename)
 
-    trade_shares = post_processing(data)
-
-    print(trade_shares)
+    post_processing(data)
