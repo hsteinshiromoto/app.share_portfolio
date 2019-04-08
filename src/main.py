@@ -6,7 +6,14 @@ import src.data.make_dataset as md
 import src.features.build_features as bf
 import src.base as base
 
+
 def post_processing(data):
+    """
+    Show what stocks should be traded
+
+    :param data: pandas.DataFrame
+    :return: pandas.DataFrame
+    """
 
     latest_day = max(data.index)
     mask = data.index == latest_day
