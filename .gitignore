@@ -3,6 +3,13 @@
 # Edit at https://www.gitignore.io/?templates=macos,latex,pycharm,sublimetext,jupyternotebook
 
 src/__pycache__/*
+src/data/__pycache__/*
+src/features/__pycache__/*
+src/__init__.py
+
+/data/interim/*.csv
+/data/processed/*.csv
+/data/raw/*.csv
 
 .cache/*
 .local/*
