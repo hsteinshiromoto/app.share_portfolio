@@ -28,18 +28,21 @@ def calculate_trade_points(prices, mean_prices):
 def get_trade_points(data, feature):
 
     # Todo: add for loops to run into each feature
+    for feature in data.columns.values:
 
-    prices = data.loc[:, feature].values
-    data.loc[:, (feature[0], "EWM")] = data.loc[:, feature].ewm(span=15, adjust=False).mean()
-    mean = data.loc[:, (feature[0], "EWM")].values
+        prices = data.loc[:, feature].values
+        data.loc[:, (feature[0], "EWM")] = data.loc[:, feature].ewm(span=15, adjust=False).mean()
+        mean = data.loc[:, (feature[0], "EWM")].values
 
-    buy_indices, sell_indices = calculate_trade_points(prices, mean)
+        buy_indices, sell_indices = calculate_trade_points(prices, mean)
 
-    mask_buy = data[feature].index[buy_indices]
-    mask_sell = data[feature].index[sell_indices]
+        mask_buy = data[feature].index[buy_indices]
+        mask_sell = data[feature].index[sell_indices]
 
-    data.loc[mask_buy, (feature[0], "Trade")] = "Buy"
-    data.loc[mask_sell, (feature[0], "Trade")] = "Sell"
-    data.loc[:, (feature[0], "Trade")].fillna(value="Hold", inplace=True)
+        data.loc[mask_buy, (feature[0], "Trade")] = "Buy"
+        data.loc[mask_sell, (feature[0], "Trade")] = "Sell"
+        data.loc[:, (feature[0], "Trade")].fillna(value="Hold", inplace=True)
 
+    data = data.reindex(sorted(data.columns), axis=1)
+    
     return data
