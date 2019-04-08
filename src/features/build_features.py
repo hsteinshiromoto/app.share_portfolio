@@ -25,9 +25,8 @@ def calculate_trade_points(prices, mean_prices):
     return buy_indices, sell_indices
 
 
-def get_trade_points(data, feature):
+def get_trade_points(data):
 
-    # Todo: add for loops to run into each feature
     for feature in data.columns.values:
 
         prices = data.loc[:, feature].values

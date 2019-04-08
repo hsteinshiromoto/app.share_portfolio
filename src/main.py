@@ -12,6 +12,6 @@ if __name__ == "__main__":
 
     data = md.main(portfolio)
 
-    data = bf.get_trade_points(data, ("WES.AX", "Close"))
+    data = bf.get_trade_points(data)
 
     print(data)
