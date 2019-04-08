@@ -1,20 +1,4 @@
-# from bokeh.server.server import Server
-# from bokeh.application import Application
-# from bokeh.application.handlers.function import FunctionHandler
-# from bokeh.plotting import figure, ColumnDataSource
-#
-# def make_document(doc):
-#     fig = figure(title='Line plot!', sizing_mode='scale_width')
-#     fig.line(x=[1, 2, 3], y=[1, 4, 9])
-#
-#     doc.title = "Hello, world!"
-#     doc.add_root(fig)
-#
-# apps = {'/': Application(FunctionHandler(make_document))}
-#
-# server = Server(apps, port=5000, address="0.0.0.0", host=['*'])
-# server.start()
-# server.io_loop.start()
+
 
 # Command to run:
 # bokeh serve app/app.py --port 5000 --address '0.0.0.0' --allow-websocket-origin=0.0.0.0:xxxxx,
