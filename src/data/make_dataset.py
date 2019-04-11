@@ -12,12 +12,12 @@ from src.base import get_paths, get_file
 # Todo: Get real time quote:
 # src https://github.com/pydata/pandas-datareader/issues/44
 
-def get_data(stocks, source, metrics=None, start='2016-01-01', end=None):
+def get_data(stocks, source, metric="Close", start='2016-01-01', end=None):
     """
     Get price values from source
 
     :param stocks: list
-    :param metrics: list, optional
+    :param metrics: str., optional
     :param source: str., optional
     :param start: str., optional
     :param end: str., optional
@@ -28,7 +28,13 @@ def get_data(stocks, source, metrics=None, start='2016-01-01', end=None):
     if not end:
         end = str(datetime.now().date())
 
-    data = pdr.get_data_yahoo(stocks, start=start, end=end)["Close"]
+    downloaded_data = pdr.get_data_yahoo(stocks, start=start, end=end)[metric]
+
+    columns = pd.MultiIndex.from_product([stocks, [metric]])
+    data = pd.DataFrame(columns=columns, index=downloaded_data.index)
+
+    for share in downloaded_data.columns:
+        data.loc[:, (share, metric)] = downloaded_data.loc[:, share].values
 
     data.dropna(how="all", inplace=True)
     data.sort_index(ascending=True, inplace=True)
