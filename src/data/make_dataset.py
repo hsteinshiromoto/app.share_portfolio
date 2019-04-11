@@ -42,12 +42,12 @@ def get_data(stocks, source, metrics=None, start='2016-01-01', end=None):
 
     data = pd.DataFrame(columns=columns, index=index)
 
-    for share in stocks:
-        for metric in metrics:
-            data.loc[:, (share, metric)] = pdr.DataReader(share,
-                                                          data_source=source,
-                                                          start=start, end=end)\
-                [metric]
+    for column in data.columns.values.squeeze():
+        share = column[0]
+        metric = column[1]
+        data.loc[:, (share, metric)] = pdr.DataReader(share, data_source=source,
+                                                      start=start, end=end)\
+                                                      [metric].drop_duplicates()
 
     data.dropna(how="all", inplace=True)
     data.sort_index(ascending=True, inplace=True)
