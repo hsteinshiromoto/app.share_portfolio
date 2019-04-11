@@ -33,11 +33,6 @@ def get_data(stocks, source, metrics=None, start='2016-01-01', end=None):
     data.dropna(how="all", inplace=True)
     data.sort_index(ascending=True, inplace=True)
 
-    mask = data.isnull()
-    if mask.any().any():
-        msg = "Values could not be fetched:\n{}.".format(data.isnull().sum())
-        raise ValueError(msg)
-
     return data
 
 
@@ -113,6 +108,9 @@ def main(stocks, source="yahoo"):
 
     paths = get_paths()
 
+    """
+    Get stock prices 
+    """
     data = load_previous_dataset(filename=None, path=None)
 
     if data is not None:
@@ -131,6 +129,28 @@ def main(stocks, source="yahoo"):
 
     else:
         data = get_data(stocks, source)
+
+    """
+    Clean data
+    """
+    # Clean missing values
+    # Todo: Create a config file and define missing_values_tolerance there
+    missing_values_tolerance = 5
+    missing_data = data.isnull().sum().to_frame()
+    new_column_name = "Count of Missing Values"
+    missing_data.rename(columns={0: new_column_name}, inplace=True)
+    missing_data = missing_data[missing_data[new_column_name] > 0]
+    missing_data.loc[:, "%"] = missing_data[new_column_name] / data.shape[0] * 100.0
+
+    if missing_data["%"].max() > missing_values_tolerance:
+        msg = "Values could not be fetched:\n{}.".format(missing_data)
+        raise ValueError(msg)
+
+    data.fillna(method="ffill", inplace=True)
+
+    """
+    Return/save the data
+    """
 
     save_data(data, filename=None, path=None)
 
