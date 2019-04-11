@@ -2,6 +2,8 @@
 # Created by https://www.gitignore.io/api/macos,latex,pycharm,sublimetext,jupyternotebook
 # Edit at https://www.gitignore.io/?templates=macos,latex,pycharm,sublimetext,jupyternotebook
 
+*.env
+
 src/__pycache__/*
 src/data/__pycache__/*
 src/features/__pycache__/*
