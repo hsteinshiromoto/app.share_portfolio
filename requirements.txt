@@ -3,3 +3,4 @@ seaborn
 bokeh
 flask
 gitpython
+fix_yahoo_finance

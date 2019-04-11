@@ -2,6 +2,8 @@ import pandas_datareader as pdr
 import pandas as pd
 import os
 import warnings
+import fix_yahoo_finance as yf
+yf.pdr_override()
 
 from datetime import datetime
 
@@ -21,36 +23,20 @@ def get_data(stocks, source, metrics=None, start='2016-01-01', end=None):
     :param end: str., optional
     :return: pandas.DataFrame
     """
-
-    default_metrics = ["High", "Low", "Open", "Close", "Adj Close", "Volume"]
-
-    if not metrics:
-        metrics = ["Close"]
-
-    elif (len(set(default_metrics) - set(metrics)) == len(set(default_metrics))):
-        msg = "Expected metrics to be in {0}. Got {1}.".format(default_metrics,
-                                                               metrics)
-        raise ValueError(msg)
+    print("Loading data from {}.".format(source))
 
     if not end:
-        end = '{0}-{1}-{2}'.format(datetime.now().year, datetime.now().month,
-                                   datetime.now().day)
+        end = str(datetime.now().date())
 
-    index = pd.date_range(datetime.strptime(start,"%Y-%m-%d"),
-                          datetime.strptime(end, "%Y-%m-%d"), freq='D')
-    columns = pd.MultiIndex.from_product([stocks, metrics])
-
-    data = pd.DataFrame(columns=columns, index=index)
-
-    for column in data.columns.values.squeeze():
-        share = column[0]
-        metric = column[1]
-        data.loc[:, (share, metric)] = pdr.DataReader(share, data_source=source,
-                                                      start=start, end=end)\
-                                                      [metric].drop_duplicates()
+    data = pdr.get_data_yahoo(stocks, start=start, end=end)["Close"]
 
     data.dropna(how="all", inplace=True)
     data.sort_index(ascending=True, inplace=True)
+
+    mask = data.isnull()
+    if mask.any().any():
+        msg = "Values could not be fetched:\n{}.".format(data.isnull().sum())
+        raise ValueError(msg)
 
     return data
 
