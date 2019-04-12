@@ -117,24 +117,25 @@ def main(stocks, source="yahoo"):
     """
     Get stock prices 
     """
-    data = load_previous_dataset(filename=None, path=None)
+    # Todo: This commented stuff is broken
+    # data = load_previous_dataset(filename=None, path=None)
 
-    if data is not None:
-        previous_stocks_list = [item[0] for item in data.columns.values.squeeze()]
-        missing_stocks = set(stocks).symmetric_difference(set(previous_stocks_list))
-        latest_date = data.index[-1].date()
-        date_equal = latest_date != datetime.now().date()
-
-        full_filename = paths.get("data").get("interim")
-        full_filename = os.path.join(full_filename, "{}.csv".format(latest_date.strftime("%Y-%m-%d")))
-        os.remove(full_filename)
-
-        if date_equal & (len(missing_stocks) == 0):
-            new_data = get_data(stocks, source, start=latest_date.strftime("%Y-%m-%d"))
-            data = pd.concat([data, new_data])
-
-    else:
-        data = get_data(stocks, source)
+    # if data is not None:
+    #     previous_stocks_list = [item[0] for item in data.columns.values.squeeze()]
+    #     missing_stocks = set(stocks).symmetric_difference(set(previous_stocks_list))
+    #     latest_date = data.index[-1].date()
+    #     date_equal = latest_date != datetime.now().date()
+    #
+    #     full_filename = paths.get("data").get("interim")
+    #     full_filename = os.path.join(full_filename, "{}.csv".format(latest_date.strftime("%Y-%m-%d")))
+    #     os.remove(full_filename)
+    #
+    #     if date_equal & (len(missing_stocks) == 0):
+    #         new_data = get_data(stocks, source, start=latest_date.strftime("%Y-%m-%d"))
+    #         data = pd.concat([data, new_data])
+    #
+    # else:
+    data = get_data(stocks, source)
 
     """
     Clean data
