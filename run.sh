@@ -73,10 +73,12 @@ else
 
     fi
 
-    port=$(docker inspect ${container_id} | grep '"HostPort":' | sed -e 's/ *"HostPort": "\(\w\+\)"/\1/')
+    # port=$(docker inspect ${container_id} | grep '"HostPort":' | sed -e 's/ *"HostPort": "\(\w\+\)"/\1/')
+    port1=$(docker ps -f "ancestor=${docker_image}" | grep -o "0.0.0.0:[0-9]*->[0-9]*" | cut -d ":" -f 2 | head -n 1)
+    port2=$(docker ps -f "ancestor=${docker_image}" | grep -o "0.0.0.0:[0-9]*->[0-9]*" | cut -d ":" -f 2 | sed -n 2p)
     token=$(./get_jupyter_token.sh)
 
     echo -e "\tContainer ID: ${container_id}"
-    echo -e "\tListening port: ${port}"
+    echo -e "\tPort mappings:\t${port1}, ${port2}"
     echo -e "\tJupyter token: ${token}\n"
 fi
