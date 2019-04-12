@@ -9,7 +9,9 @@ container_id=$(docker ps -lq -f "ancestor=${docker_image}" -f status=running)
 if [[ -z "${container_id}" ]]; then
     echo "No container for ${image_name} is currently running."
 else
-    token=$(docker logs ${container_id} 2>&1 | tac | grep "^ \+http:\/\/.*\?token" | head -n1 | sed -e 's/.*\?token=\(\w\+\)/\1/')
+	token=$(docker logs ${container_id} 2>&1 | tac | grep -o "token=[a-z0-9]*" | sed -n 1p | cut -d "=" -f 2
+)
+    # token=$(docker logs ${container_id} 2>&1 | tac | grep "^ \+http:\/\/.*\?token" | head -n1 | sed -e 's/.*\?token=\(\w\+\)/\1/')
 fi
 
 echo ${token}
