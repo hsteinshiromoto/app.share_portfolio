@@ -28,6 +28,11 @@ then
     docker exec -i ${container_id} \
            bash -c "bokeh serve app/app.py --port 5000 --address '0.0.0.0' --allow-websocket-origin=0.0.0.0:${bokeh_port}"
 
+elif [[ $1 = "kill_bokeh" ]]
+then
+
+    kill $(ps -ef | grep python | grep bokeh | awk '{print $2}')
+
 else
     if [[ -z "$container_id" ]];
     then
@@ -45,6 +50,7 @@ else
 
         container_id=$(docker ps -qf "ancestor=${docker_image}")
         echo "Container already exists"
+        docker exec -it ${container_id} /bin/bash
 
     fi
 
