@@ -19,33 +19,7 @@ container_id=$(docker ps -qf "ancestor=${docker_image}")
 if [[ $1 = 'clean' ]];
 then
 
-    container_ids=$(docker ps -aqf "ancestor=${docker_image}")
-
-    if [ -z ${container_ids} ]
-    then
-        echo "No containers running"
-
-    else
-
-        echo "Stopping and removing containers ${container_ids}"
-        docker kill ${container_ids}
-        docker rm ${container_ids}
-
-    fi
-
-    container_ids=$(docker ps -a | grep pycharm | awk  '{ print $1 }')
-
-    if [ -z ${container_ids} ]
-    then
-        echo "No Pycharm containers running"
-
-    else
-
-        echo "Stopping and removing containers ${container_ids}"
-        docker kill ${container_ids}
-        docker rm ${container_ids}
-
-    fi
+    docker container prune
 
 elif [[ $1 = "bokeh" ]]
 then
