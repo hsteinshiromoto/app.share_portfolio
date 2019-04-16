@@ -50,8 +50,9 @@ then
 elif [[ $1 = "bokeh" ]]
 then
 
+    bokeh_port=$(docker ps -f "ancestor=${docker_image}" | grep -o "0.0.0.0:[0-9]*->5000*" | cut -d ":" -f 2 | cut -d "-" -f 1 |head -n 1)
     docker exec -i ${container_id} \
-           bash -c "bokeh serve app/app.py --port 5000 --address '0.0.0.0'"
+           bash -c "bokeh serve app/app.py --port 5000 --address '0.0.0.0' --allow-websocket-origin=0.0.0.0:${bokeh_port}"
 
 else
     if [[ -z "$container_id" ]];
