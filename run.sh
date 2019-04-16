@@ -19,39 +19,19 @@ container_id=$(docker ps -qf "ancestor=${docker_image}")
 if [[ $1 = 'clean' ]];
 then
 
-    container_ids=$(docker ps -aqf "ancestor=${docker_image}")
-
-    if [ -z ${container_ids} ]
-    then
-        echo "No containers running"
-
-    else
-
-        echo "Stopping and removing containers ${container_ids}"
-        docker kill ${container_ids}
-        docker rm ${container_ids}
-
-    fi
-
-    container_ids=$(docker ps -a | grep pycharm | awk  '{ print $1 }')
-
-    if [ -z ${container_ids} ]
-    then
-        echo "No Pycharm containers running"
-
-    else
-
-        echo "Stopping and removing containers ${container_ids}"
-        docker kill ${container_ids}
-        docker rm ${container_ids}
-
-    fi
+    docker container prune
 
 elif [[ $1 = "bokeh" ]]
 then
 
+    bokeh_port=$(docker ps -f "ancestor=${docker_image}" | grep -o "0.0.0.0:[0-9]*->5000*" | cut -d ":" -f 2 | cut -d "-" -f 1 |head -n 1)
     docker exec -i ${container_id} \
-           bash -c "bokeh serve app/app.py --port 5000 --address '0.0.0.0'"
+           bash -c "bokeh serve app/app.py --port 5000 --address '0.0.0.0' --allow-websocket-origin=0.0.0.0:${bokeh_port}"
+
+elif [[ $1 = "kill_bokeh" ]]
+then
+
+    kill $(ps -ef | grep python | grep bokeh | awk '{print $2}')
 
 else
     if [[ -z "$container_id" ]];
@@ -70,13 +50,16 @@ else
 
         container_id=$(docker ps -qf "ancestor=${docker_image}")
         echo "Container already exists"
+        docker exec -it ${container_id} /bin/bash
 
     fi
 
-    port=$(docker inspect ${container_id} | grep '"HostPort":' | sed -e 's/ *"HostPort": "\(\w\+\)"/\1/')
+    # port=$(docker inspect ${container_id} | grep '"HostPort":' | sed -e 's/ *"HostPort": "\(\w\+\)"/\1/')
+    port1=$(docker ps -f "ancestor=${docker_image}" | grep -o "0.0.0.0:[0-9]*->[0-9]*" | cut -d ":" -f 2 | head -n 1)
+    port2=$(docker ps -f "ancestor=${docker_image}" | grep -o "0.0.0.0:[0-9]*->[0-9]*" | cut -d ":" -f 2 | sed -n 2p)
     token=$(./get_jupyter_token.sh)
 
     echo -e "\tContainer ID: ${container_id}"
-    echo -e "\tListening port: ${port}"
+    echo -e "\tPort mappings:\t${port1}, ${port2}"
     echo -e "\tJupyter token: ${token}\n"
 fi

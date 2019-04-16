@@ -2,6 +2,8 @@ import pandas_datareader as pdr
 import pandas as pd
 import os
 import warnings
+import fix_yahoo_finance as yf
+yf.pdr_override()
 
 from datetime import datetime
 
@@ -10,44 +12,29 @@ from src.base import get_paths, get_file
 # Todo: Get real time quote:
 # src https://github.com/pydata/pandas-datareader/issues/44
 
-def get_data(stocks, source, metrics=None, start='2016-01-01', end=None):
+def get_data(stocks, source, metric="Close", start='2016-01-01', end=None):
     """
     Get price values from source
 
     :param stocks: list
-    :param metrics: list, optional
+    :param metrics: str., optional
     :param source: str., optional
     :param start: str., optional
     :param end: str., optional
     :return: pandas.DataFrame
     """
-
-    default_metrics = ["High", "Low", "Open", "Close", "Adj Close", "Volume"]
-
-    if not metrics:
-        metrics = ["Close"]
-
-    elif (len(set(default_metrics) - set(metrics)) == len(set(default_metrics))):
-        msg = "Expected metrics to be in {0}. Got {1}.".format(default_metrics,
-                                                               metrics)
-        raise ValueError(msg)
+    print("Loading data from {}.".format(source))
 
     if not end:
-        end = '{0}-{1}-{2}'.format(datetime.now().year, datetime.now().month,
-                                   datetime.now().day)
+        end = str(datetime.now().date())
 
-    index = pd.date_range(datetime.strptime(start,"%Y-%m-%d"),
-                          datetime.strptime(end, "%Y-%m-%d"), freq='D')
-    columns = pd.MultiIndex.from_product([stocks, metrics])
+    downloaded_data = pdr.get_data_yahoo(stocks, start=start, end=end)[metric]
 
-    data = pd.DataFrame(columns=columns, index=index)
+    columns = pd.MultiIndex.from_product([stocks, [metric]])
+    data = pd.DataFrame(columns=columns, index=downloaded_data.index)
 
-    for share in stocks:
-        for metric in metrics:
-            data.loc[:, (share, metric)] = pdr.DataReader(share,
-                                                          data_source=source,
-                                                          start=start, end=end)\
-                [metric]
+    for share in downloaded_data.columns:
+        data.loc[:, (share, metric)] = downloaded_data.loc[:, share].values
 
     data.dropna(how="all", inplace=True)
     data.sort_index(ascending=True, inplace=True)
@@ -127,24 +114,50 @@ def main(stocks, source="yahoo"):
 
     paths = get_paths()
 
-    data = load_previous_dataset(filename=None, path=None)
+    """
+    Get stock prices 
+    """
+    # Todo: This commented stuff is broken
+    # data = load_previous_dataset(filename=None, path=None)
 
-    if data is not None:
-        previous_stocks_list = [item[0] for item in data.columns.values.squeeze()]
-        missing_stocks = set(stocks).symmetric_difference(set(previous_stocks_list))
-        latest_date = data.index[-1].date()
-        date_equal = latest_date != datetime.now().date()
+    # if data is not None:
+    #     previous_stocks_list = [item[0] for item in data.columns.values.squeeze()]
+    #     missing_stocks = set(stocks).symmetric_difference(set(previous_stocks_list))
+    #     latest_date = data.index[-1].date()
+    #     date_equal = latest_date != datetime.now().date()
+    #
+    #     full_filename = paths.get("data").get("interim")
+    #     full_filename = os.path.join(full_filename, "{}.csv".format(latest_date.strftime("%Y-%m-%d")))
+    #     os.remove(full_filename)
+    #
+    #     if date_equal & (len(missing_stocks) == 0):
+    #         new_data = get_data(stocks, source, start=latest_date.strftime("%Y-%m-%d"))
+    #         data = pd.concat([data, new_data])
+    #
+    # else:
+    data = get_data(stocks, source)
 
-        full_filename = paths.get("data").get("interim")
-        full_filename = os.path.join(full_filename, "{}.csv".format(latest_date.strftime("%Y-%m-%d")))
-        os.remove(full_filename)
+    """
+    Clean data
+    """
+    # Clean missing values
+    # Todo: Create a config file and define missing_values_tolerance there
+    missing_values_tolerance = 5
+    missing_data = data.isnull().sum().to_frame()
+    new_column_name = "Count of Missing Values"
+    missing_data.rename(columns={0: new_column_name}, inplace=True)
+    missing_data = missing_data[missing_data[new_column_name] > 0]
+    missing_data.loc[:, "%"] = missing_data[new_column_name] / data.shape[0] * 100.0
 
-        if date_equal & (len(missing_stocks) == 0):
-            new_data = get_data(stocks, source, start=latest_date.strftime("%Y-%m-%d"))
-            data = pd.concat([data, new_data])
+    if missing_data["%"].max() > missing_values_tolerance:
+        msg = "Values could not be fetched:\n{}.".format(missing_data)
+        raise ValueError(msg)
 
-    else:
-        data = get_data(stocks, source)
+    data.fillna(method="ffill", inplace=True)
+
+    """
+    Return/save the data
+    """
 
     save_data(data, filename=None, path=None)
 
