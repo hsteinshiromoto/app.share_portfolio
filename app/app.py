@@ -10,65 +10,60 @@ from bokeh.layouts import column
 sys.path.append(os.path.dirname(os.path.dirname(__file__)))
 from src.base import get_paths, get_file
 
-def load_data():
-
-    paths = get_paths()
-
-    filename = get_file(paths.get("data").get("processed"), pattern=None,
-                        extension=".csv", latest=True)
-    filename = os.path.join(paths.get("data").get("processed"), filename)
-    data = pd.read_csv(filename, index_col=0, header=[0,1])
-
-    return data
 
 
-def line_plot(data):
+paths = get_paths()
 
-    linewidth = 3
+filename = get_file(paths.get("data").get("processed"), pattern=None,
+                    extension=".csv", latest=True)
+filename = os.path.join(paths.get("data").get("processed"), filename)
+data = pd.read_csv(filename, index_col=0, header=[0,1])
 
-    x = data.index
-    y = data.loc[:, ("QBE.AX", "Close")]
+print(data)
 
-    print(x)
-    print(y)
+linewidth = 3
 
-    p = figure(plot_width=900, plot_height=600, title='Close Price',
-               x_axis_label='Date [Days]', x_axis_type='datetime',
-               y_axis_label='Price',
-               tools=['box_select', 'box_zoom', 'pan', 'reset', 'save'])
+x = data.index
+y = data.loc[:, ("QBE.AX", "Close")]
 
-    p.outline_line_color = None
+print(x)
+print(y)
 
-    p.xgrid.visible = False
-    p.ygrid.visible = False
+p = figure(plot_width=900, plot_height=600, title='Close Price',
+           x_axis_label='Date [Days]', x_axis_type='datetime',
+           y_axis_label='Price',
+           tools=['box_select', 'box_zoom', 'pan', 'reset', 'save'])
 
-    p.xgrid.visible = False
-    p.ygrid.visible = False
+p.outline_line_color = None
 
-    p.xaxis.major_tick_line_color = None  # turn off x-axis major ticks
-    p.xaxis.minor_tick_line_color = None  # turn off x-axis minor ticks
+p.xgrid.visible = False
+p.ygrid.visible = False
 
-    p.xaxis.axis_line_width = 0
-    p.xaxis.axis_line_color = None
+p.xgrid.visible = False
+p.ygrid.visible = False
 
-    p.yaxis.major_tick_line_color = None  # turn off y-axis major ticks
-    p.yaxis.minor_tick_line_color = None  # turn off y-axis minor ticks
+p.xaxis.major_tick_line_color = None  # turn off x-axis major ticks
+p.xaxis.minor_tick_line_color = None  # turn off x-axis minor ticks
 
-    p.yaxis.axis_line_width = 0
-    p.yaxis.axis_line_color = None
+p.xaxis.axis_line_width = 0
+p.xaxis.axis_line_color = None
 
-    price_plot = p.line(x, y, line_width=linewidth, color="blue", legend="Price",
-                        alpha=0.5, line_dash="solid", muted_alpha=0)
+p.yaxis.major_tick_line_color = None  # turn off y-axis major ticks
+p.yaxis.minor_tick_line_color = None  # turn off y-axis minor ticks
 
-    return price_plot
+p.yaxis.axis_line_width = 0
+p.yaxis.axis_line_color = None
+
+p.line(x, y, line_width=linewidth, color="blue", legend="Price",
+                    alpha=0.5, line_dash="solid", muted_alpha=0)
 
 
 # Create each of the tabs
-data = load_data()
-plot = line_plot(data)
+# data = load_data()
+# plot = line_plot(data)
 
 # Put the tabs in the current document for display
-curdoc().add_root(plot)
+curdoc().add_root(p)
 
 """
 Example from https://programminghistorian.org/en/lessons/visualizing-with-bokeh is working
