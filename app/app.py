@@ -15,7 +15,7 @@ app = Flask(__name__)
 
 DEFAULT_PLOT_DICT = {"linewidth": 3
                      ,"marker": {"size": 8, "alpha": 1}
-                     }
+                     ,"ticks": {"fontsize": "16pt"}}
 
 def read_data(path=None):
 
@@ -81,6 +81,8 @@ def make_figure(data, stock):
 
 def format_figure(plot):
 
+    ticks_fontsize = DEFAULT_PLOT_DICT.get("ticks").get("fontsize")
+
     plot.outline_line_color = None
 
     plot.xgrid.visible = False
@@ -101,8 +103,17 @@ def format_figure(plot):
     plot.yaxis.axis_line_width = 0
     plot.yaxis.axis_line_color = None
 
+    # Change ticks label font size
+    # src: https://stackoverflow.com/questions/47220491/how-do-you-change-ticks-label-sizes-using-pythons-bokeh
+    plot.xaxis.major_label_text_font_size = ticks_fontsize
+    plot.xaxis.axis_label_text_font_size = ticks_fontsize
+
+    plot.yaxis.major_label_text_font_size = ticks_fontsize
+    plot.yaxis.axis_label_text_font_size = ticks_fontsize
+
     # Click in the legend to remove the corresponding line
     plot.legend.click_policy = "mute"
+    plot.legend.label_text_font_size = ticks_fontsize
 
     return plot
 
