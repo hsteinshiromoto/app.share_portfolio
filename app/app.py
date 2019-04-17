@@ -34,26 +34,6 @@ p = figure(plot_width=900, plot_height=600, title='Close Price',
            y_axis_label='Price',
            tools=['box_select', 'box_zoom', 'pan', 'reset', 'save'])
 
-p.outline_line_color = None
-
-p.xgrid.visible = False
-p.ygrid.visible = False
-
-p.xgrid.visible = False
-p.ygrid.visible = False
-
-p.xaxis.major_tick_line_color = None  # turn off x-axis major ticks
-p.xaxis.minor_tick_line_color = None  # turn off x-axis minor ticks
-
-p.xaxis.axis_line_width = 0
-p.xaxis.axis_line_color = None
-
-p.yaxis.major_tick_line_color = None  # turn off y-axis major ticks
-p.yaxis.minor_tick_line_color = None  # turn off y-axis minor ticks
-
-p.yaxis.axis_line_width = 0
-p.yaxis.axis_line_color = None
-
 p.line(x, y, line_width=linewidth, color="blue", legend="Price",
                     alpha=0.5, line_dash="solid", muted_alpha=0)
 
@@ -64,7 +44,7 @@ p.line(x, y, line_width=linewidth, color="blue", legend="Price",
 
 # Put the tabs in the current document for display
 curdoc().add_root(p)
-
+show(p)
 """
 Example from https://programminghistorian.org/en/lessons/visualizing-with-bokeh is working
 
