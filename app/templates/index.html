@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <!-- Load BokehJS components -->
+    <!-- Note that the x in bokeh-x.x.x.min must be the same as the bokeh version installed. Check the versions using pip list -->
+    <script type="text/javascript" src="http://cdn.pydata.org/bokeh/release/bokeh-1.1.0.min.js"></script>
+
+    <!-- Load BokehJS CSS -->
+    <link rel="stylesheet" href="http://cdn.pydata.org/bokeh/release/bokeh-1.1.0.min.css" type="text/css" />
+    {{ script | safe }}
+
+    <title>Hey, I'm working!</title>
+</head>
+<body>
+   <h1>{{ greetings | safe }} </h1>
+
+
+    {{ div | safe }}
+
+</body>
+</html>
