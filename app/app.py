@@ -7,6 +7,7 @@ from flask import Flask, render_template
 
 from bokeh.plotting import figure
 from bokeh.embed import components
+from bokeh.models import Legend, HoverTool
 
 from src.base import get_file, get_paths
 
@@ -33,10 +34,19 @@ def read_data(path=None):
 
 def make_figure(data, stock):
 
+    hover = HoverTool(
+                    tooltips=[("Date", "@x{%F}"),
+                              ("Price", "@y")],
+                    formatters={"x": "datetime"},
+                    mode='mouse'
+                    )
+
     linewidth = DEFAULT_PLOT_DICT.get("linewidth")
 
     plot = figure(plot_width=1500, plot_height = 750, title = 'Close Price',
-           x_axis_label = 'Date [Days]', x_axis_type='datetime', y_axis_label='Price')
+                  x_axis_label = 'Date [Days]', x_axis_type='datetime',
+                  y_axis_label='Price', tools=[hover, 'box_select', 'box_zoom',
+                                               'pan', 'reset', 'save'] )
 
     x = data.index
     y = data.loc[x, (stock, "Close")]
@@ -90,6 +100,9 @@ def format_figure(plot):
 
     plot.yaxis.axis_line_width = 0
     plot.yaxis.axis_line_color = None
+
+    # Click in the legend to remove the corresponding line
+    plot.legend.click_policy = "mute"
 
     return plot
 
