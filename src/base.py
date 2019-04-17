@@ -9,7 +9,7 @@ def get_file(path, pattern=None, extension=None, latest=True):
 
     :param path: str
     :param pattern: str., optional
-    :param extension: str., optionals
+    :param extension .something: str., optionals
     :param latest: bool., optional
     :return: str or list
     """
