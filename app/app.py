@@ -12,7 +12,9 @@ from src.base import get_file, get_paths
 
 app = Flask(__name__)
 
-DEFAULT_PLOT_DICT = {"linewidth": 3}
+DEFAULT_PLOT_DICT = {"linewidth": 3
+                     ,"marker": {"size": 8, "alpha": 1}
+                     }
 
 def read_data(path=None):
 
@@ -41,6 +43,20 @@ def make_figure(data, stock):
 
     plot.line(x, y, line_width=linewidth, color="blue", legend="Price",
                     alpha=0.5, line_dash="solid", muted_alpha=0)
+
+    for trade_type in ["Buy", "Sell"]:
+
+        mask_trade = data.loc[:, (stock, "Trade")] == trade_type
+        x_trade = data.loc[mask_trade, (stock, "Close")].index
+        y_trade = data.loc[mask_trade, (stock, "Close")].values
+
+        if trade_type == "Buy":
+            color = "blue"
+
+        else:
+            color = "red"
+
+        plot.circle(x_trade, y_trade, size=8, color=color, alpha=1, fill_color="white", legend="Buy", muted_alpha=0)
 
     return plot
 
