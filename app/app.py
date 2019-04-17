@@ -12,6 +12,8 @@ from src.base import get_file, get_paths
 
 app = Flask(__name__)
 
+DEFAULT_PLOT_DICT = {"linewidth": 3}
+
 def read_data(path=None):
 
     if not path:
@@ -27,13 +29,18 @@ def read_data(path=None):
     return data
 
 
-def make_figure():
-    plot = figure(width=750, height=450, title='United States Import/Exports')
+def make_figure(data, stock):
 
-    y = np.random.rand(100, 1).squeeze()
-    x = np.array(range(len(y))).squeeze()
+    linewidth = DEFAULT_PLOT_DICT.get("linewidth")
 
-    plot.line(x, y, color='#A6CEE3', legend='Exports')
+    plot = figure(plot_width=1500, plot_height = 750, title = 'Close Price',
+           x_axis_label = 'Date [Days]', x_axis_type='datetime', y_axis_label='Price')
+
+    x = data.index
+    y = data.loc[x, (stock, "Close")]
+
+    plot.line(x, y, line_width=linewidth, color="blue", legend="Price",
+                    alpha=0.5, line_dash="solid", muted_alpha=0)
 
     return plot
 
@@ -42,7 +49,7 @@ def make_figure():
 def greet():
     greetings = 'Hello World, I am BOKEH'
     data = read_data()
-    plot = make_figure()
+    plot = make_figure(data, "QBE.AX")
     script, div = components(plot)
 
     return render_template('index.html', greetings=greetings, script=script, div=div)
