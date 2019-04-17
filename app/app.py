@@ -45,11 +45,36 @@ def make_figure(data, stock):
     return plot
 
 
+def format_figure(plot):
+
+    plot.outline_line_color = None
+
+    plot.xgrid.visible = False
+    plot.ygrid.visible = False
+
+    plot.xgrid.visible = False
+    plot.ygrid.visible = False
+
+    plot.xaxis.major_tick_line_color = None  # turn off x-axis major ticks
+    plot.xaxis.minor_tick_line_color = None  # turn off x-axis minor ticks
+
+    plot.xaxis.axis_line_width = 0
+    plot.xaxis.axis_line_color = None
+
+    plot.yaxis.major_tick_line_color = None  # turn off y-axis major ticks
+    plot.yaxis.minor_tick_line_color = None  # turn off y-axis minor ticks
+
+    plot.yaxis.axis_line_width = 0
+    plot.yaxis.axis_line_color = None
+
+    return plot
+
 @app.route('/')
 def greet():
     greetings = 'Hello World, I am BOKEH'
     data = read_data()
     plot = make_figure(data, "QBE.AX")
+    plot = format_figure(plot)
     script, div = components(plot)
 
     return render_template('index.html', greetings=greetings, script=script, div=div)
