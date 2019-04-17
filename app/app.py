@@ -44,6 +44,11 @@ def make_figure(data, stock):
     plot.line(x, y, line_width=linewidth, color="blue", legend="Price",
                     alpha=0.5, line_dash="solid", muted_alpha=0)
 
+    y_ewm = data.loc[x, (stock, "EWM")]
+
+    plot.line(x, y_ewm, line_width=linewidth, color="red", legend="EWM",
+              alpha=0.5, line_dash="solid", muted_alpha=0)
+
     for trade_type in ["Buy", "Sell"]:
 
         mask_trade = data.loc[:, (stock, "Trade")] == trade_type
@@ -56,7 +61,10 @@ def make_figure(data, stock):
         else:
             color = "red"
 
-        plot.circle(x_trade, y_trade, size=8, color=color, alpha=1, fill_color="white", legend="Buy", muted_alpha=0)
+        plot.circle(x_trade, y_trade, size=8, color=color, alpha=1,
+                    fill_color="white", legend=trade_type, muted_alpha=0)
+
+
 
     return plot
 
