@@ -22,6 +22,7 @@ def read_data(path=None):
     filename = os.path.join(path, filename)
 
     data = pd.read_csv(filename, index_col=0, header=[0, 1])
+    data.index = pd.to_datetime(data.index)
 
     return data
 
