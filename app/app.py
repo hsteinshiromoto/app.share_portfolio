@@ -1,50 +1,35 @@
-import os, sys
-import pandas as pd
+import numpy as np
 
-# Bokeh modules
-from bokeh.io import curdoc, show
+from flask import Flask, render_template
+
 from bokeh.plotting import figure
-from bokeh.layouts import column
+from bokeh.embed import components
 
-# Scripts
-sys.path.append(os.path.dirname(os.path.dirname(__file__)))
-from src.base import get_paths, get_file
+app = Flask(__name__)
 
+def make_figure():
+    plot = figure(width=750, height=450, title='United States Import/Exports')
 
+    y = np.random.rand(100, 1).squeeze()
+    x = np.array(range(len(y))).squeeze()
 
-paths = get_paths()
+    plot.line(x, y, color='#A6CEE3', legend='Exports')
 
-filename = get_file(paths.get("data").get("processed"), pattern=None,
-                    extension=".csv", latest=True)
-filename = os.path.join(paths.get("data").get("processed"), filename)
-data = pd.read_csv(filename, index_col=0, header=[0,1])
-
-print(data)
-
-linewidth = 3
-
-x = data.index
-y = data.loc[:, ("QBE.AX", "Close")]
-
-print(x)
-print(y)
-
-p = figure(plot_width=900, plot_height=600, title='Close Price',
-           x_axis_label='Date [Days]', x_axis_type='datetime',
-           y_axis_label='Price',
-           tools=['box_select', 'box_zoom', 'pan', 'reset', 'save'])
-
-p.line(x, y, line_width=linewidth, color="blue", legend="Price",
-                    alpha=0.5, line_dash="solid", muted_alpha=0)
+    return plot
 
 
-# Create each of the tabs
-# data = load_data()
-# plot = line_plot(data)
+@app.route('/')
+def greet():
+    greetings = 'Hello World, I am BOKEH'
+    plot = make_figure()
+    script, div = components(plot)
 
-# Put the tabs in the current document for display
-curdoc().add_root(p)
-show(p)
+    return render_template('index.html', greetings=greetings, script=script, div=div)
+
+
+if __name__ == '__main__':
+    app.run(debug=True, host="0.0.0.0", port="5000")
+
 """
 Example from https://programminghistorian.org/en/lessons/visualizing-with-bokeh is working
 
