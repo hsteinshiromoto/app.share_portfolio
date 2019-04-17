@@ -12,13 +12,14 @@ from src.base import get_file, get_paths
 
 app = Flask(__name__)
 
-def read_data():
+def read_data(path=None):
 
-    paths = get_paths()
-    filename = get_file(paths.get("data").get("processed"), extension=".csv",
-                        latest=True)
+    if not path:
+        paths = get_paths()
+        path = paths.get("data").get("processed")
 
-    filename = os.path.join(paths.get("data").get("processed"), filename)
+    filename = get_file(path, extension=".csv", latest=True)
+    filename = os.path.join(path, filename)
 
     data = pd.read_csv(filename, index_col=0, header=[0, 1])
 
@@ -39,6 +40,7 @@ def make_figure():
 @app.route('/')
 def greet():
     greetings = 'Hello World, I am BOKEH'
+    data = read_data()
     plot = make_figure()
     script, div = components(plot)
 
