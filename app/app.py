@@ -1,3 +1,6 @@
+import os
+
+import pandas as pd
 import numpy as np
 
 from flask import Flask, render_template
@@ -5,7 +8,22 @@ from flask import Flask, render_template
 from bokeh.plotting import figure
 from bokeh.embed import components
 
+from src.base import get_file, get_paths
+
 app = Flask(__name__)
+
+def read_data():
+
+    paths = get_paths()
+    filename = get_file(paths.get("data").get("processed"), extension=".csv",
+                        latest=True)
+
+    filename = os.path.join(paths.get("data").get("processed"), filename)
+
+    data = pd.read_csv(filename, index_col=0, header=[0, 1])
+
+    return data
+
 
 def make_figure():
     plot = figure(width=750, height=450, title='United States Import/Exports')
