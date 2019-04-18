@@ -197,7 +197,7 @@ def mwe():
     select.callback = callback
     script, div = components({"plot": p, "select":select})
 
-    return render_template('mwe.html', resources=INLINE.render(), script=script, div=div, greetings="None")
+    return render_template('mwe.html', resources=INLINE.render(), script=script, div=div, greetings="MWE")
 
 if __name__ == '__main__':
     app.run(debug=True, host="0.0.0.0", port="5000")
