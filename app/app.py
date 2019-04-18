@@ -8,6 +8,8 @@ from flask import Flask, render_template
 from bokeh.plotting import figure
 from bokeh.embed import components
 from bokeh.models import HoverTool, ColumnDataSource
+# The resources are the JS and CSS scripts needed to load the plots
+from bokeh.resources import INLINE
 
 from src.base import get_file, get_paths
 
@@ -125,6 +127,7 @@ def format_figure(plot):
 Check how dynamically plot features:
 
 src: https://stackoverflow.com/questions/35298029/embedding-bokeh-plot-and-datatable-in-flask
+src: https://stackoverflow.com/questions/55301063/how-to-embed-a-datatable-widget-in-a-python-flask-web-app
 """
 
 @app.route('/')
@@ -135,7 +138,8 @@ def greet():
     plot = format_figure(plot)
     script, div = components({"plot": plot})
 
-    return render_template('index.html', greetings=greetings, script=script, div=div)
+    return render_template('index.html', resources=INLINE.render(),
+                           greetings=greetings, script=script, div=div)
 
 
 if __name__ == '__main__':
