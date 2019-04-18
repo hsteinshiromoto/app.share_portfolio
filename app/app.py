@@ -142,5 +142,62 @@ def greet():
                            greetings=greetings, script=script, div=div)
 
 
+""""
+An MWE
+"""
+from bokeh.io import show
+from bokeh.layouts import widgetbox, row
+from bokeh.models import ColumnDataSource, CustomJS
+
+@app.route("/mwe")
+def mwe():
+
+    df = pd.DataFrame()
+    df['x'] = np.random.randint(1, 1000, 1000)
+    df['y'] = np.random.randint(1, 1000, 1000)
+    df['val1'] = np.random.randint(1, 1000, 1000)
+    df['val2'] = np.random.randint(1, 1000, 1000)
+    df['val3'] = np.random.randint(1, 1000, 1000)
+
+    from bokeh.plotting import figure
+    from bokeh.models import LinearColorMapper
+    from bokeh.palettes import RdYlBu11 as palette
+
+    p = figure(x_range=(0, 1000), y_range=(0, 1000))
+    source = ColumnDataSource(df)
+    source_orig = ColumnDataSource(df)
+    color_mapper = LinearColorMapper(palette=palette)
+    p.rect('x', 'y', source=source, width=4, height=4,
+           color={'field': 'val1', 'transform': color_mapper})
+
+    from bokeh.models.widgets import Select
+    select = Select(title="Option:", value="val1", options=["val1", "val2", "val3"])
+
+    callback = CustomJS(args={'source': source}, code="""
+            // print the selectd value of the select widget - 
+            // this is printed in the browser console.
+            // cb_obj is the callback object, in this case the select 
+            // widget. cb_obj.value is the selected value.
+            console.log(' changed selected option', cb_obj.value);
+
+            // create a new variable for the data of the column data source
+            // this is linked to the plot
+            var data = source.data;
+
+            // allocate the selected column to the field for the y values
+            data['y'] = data[cb_obj.value];
+
+            // register the change - this is required to process the change in 
+            // the y values
+            source.change.emit();
+    """)
+
+    # Add the callback to the select widget.
+    # This executes each time the selected option changes
+    select.callback = callback
+    script, div = components({"plot": p, "select":select})
+
+    return render_template('mwe.html', resources=INLINE.render(), script=script, div=div, greetings="None")
+
 if __name__ == '__main__':
     app.run(debug=True, host="0.0.0.0", port="5000")
