@@ -7,7 +7,7 @@ from flask import Flask, render_template
 
 from bokeh.plotting import figure
 from bokeh.embed import components
-from bokeh.models import Legend, HoverTool
+from bokeh.models import HoverTool, ColumnDataSource
 
 from src.base import get_file, get_paths
 
@@ -34,10 +34,19 @@ def read_data(path=None):
 
 def make_figure(data, stock):
 
+    price_source = ColumnDataSource(dict(
+        dates=data.index,
+        price=data.loc[:, (stock, "Close")],
+        ewm=data.loc[:, (stock, "EWM")]
+    ))
+
+    # N.B.: The first argument in the tuples of tooltips must have the same
+    # name as those defined in the dict of source
+    # src: https://stackoverflow.com/questions/54316623/how-to-get-the-axis-values-on-the-hovertool-bokeh
     hover = HoverTool(
-                    tooltips=[("Date", "@x{%F}"),
-                              ("Price", "@y")],
-                    formatters={"x": "datetime"},
+                    tooltips=[("Date", "@dates{%F}"),
+                              ("Price", "@price")],
+                    formatters={"dates": "datetime"},
                     mode='mouse'
                     )
 
@@ -48,16 +57,11 @@ def make_figure(data, stock):
                   y_axis_label='Price', tools=[hover, 'box_select', 'box_zoom',
                                                'pan', 'reset', 'save'] )
 
-    x = data.index
-    y = data.loc[x, (stock, "Close")]
+    plot.line(x="dates", y="price", line_width=linewidth, color="blue", legend="Price",
+                    alpha=0.5, line_dash="solid", muted_alpha=0, source=price_source)
 
-    plot.line(x, y, line_width=linewidth, color="blue", legend="Price",
-                    alpha=0.5, line_dash="solid", muted_alpha=0)
-
-    y_ewm = data.loc[x, (stock, "EWM")]
-
-    plot.line(x, y_ewm, line_width=linewidth, color="red", legend="EWM",
-              alpha=0.5, line_dash="solid", muted_alpha=0)
+    plot.line(x="dates", y="ewm", line_width=linewidth, color="red", legend="EWM",
+              alpha=0.5, line_dash="solid", muted_alpha=0, source=price_source)
 
     for trade_type in ["Buy", "Sell"]:
 
