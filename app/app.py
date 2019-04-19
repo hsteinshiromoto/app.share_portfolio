@@ -10,6 +10,7 @@ from flask import Flask, render_template
 from bokeh.plotting import figure
 from bokeh.embed import components
 from bokeh.models import HoverTool, ColumnDataSource
+from bokeh.models.widgets import Select
 # The resources are the JS and CSS scripts needed to load the plots
 from bokeh.resources import INLINE
 
@@ -56,55 +57,81 @@ def get_source(path=None):
     return data, source
 
 
-def make_figure(data, stock):
+def make_figure(source, shares):
 
-    price_source = ColumnDataSource(dict(
-        dates=data.index,
-        price=data.loc[:, (stock, "Close")],
-        ewm=data.loc[:, (stock, "EWM")]
-    ))
+    linewidth = DEFAULT_PLOT_DICT.get("linewidth")
 
     # N.B.: The first argument in the tuples of tooltips must have the same
     # name as those defined in the dict of source
     # src: https://stackoverflow.com/questions/54316623/how-to-get-the-axis-values-on-the-hovertool-bokeh
     hover = HoverTool(
-                    tooltips=[("Date", "@dates{%F}"),
-                              ("Price", "@price")],
-                    formatters={"dates": "datetime"},
-                    mode='mouse'
-                    )
+        tooltips=[("Date", "@Date{%F}"),
+                  ("Price", "@y_Close")],
+        formatters={"Date": "datetime"},
+        mode='mouse'
+    )
 
-    linewidth = DEFAULT_PLOT_DICT.get("linewidth")
-
-    plot = figure(plot_width=1500, plot_height = 750, title = 'Close Price',
-                  x_axis_label = 'Date [Days]', x_axis_type='datetime',
+    plot = figure(plot_width=1500, plot_height=750, title='Close Price',
+                  x_axis_label='Date [Days]', x_axis_type='datetime',
                   y_axis_label='Price', tools=[hover, 'box_select', 'box_zoom',
-                                               'pan', 'reset', 'save'] )
+                                               'pan', 'reset', 'save'])
 
-    plot.line(x="dates", y="price", line_width=linewidth, color="blue", legend="Price",
-                    alpha=0.5, line_dash="solid", muted_alpha=0, source=price_source)
+    plot.line(x="Date", y="y_Close", line_width=linewidth, color="blue", legend="Price",
+              alpha=0.5, line_dash="solid", muted_alpha=0, source=source)
 
-    plot.line(x="dates", y="ewm", line_width=linewidth, color="red", legend="EWM",
-              alpha=0.5, line_dash="solid", muted_alpha=0, source=price_source)
+    select = Select(title="Option:", value="QBE.AX_Close", options=shares)
 
-    for trade_type in ["Buy", "Sell"]:
+    callback = CustomJS(args={'source': source}, code="""
+                    // print the selectd value of the select widget - 
+                    // this is printed in the browser console.
+                    // cb_obj is the callback object, in this case the select 
+                    // widget. cb_obj.value is the selected value.
+                    console.log(' changed selected option', cb_obj.value);
 
-        mask_trade = data.loc[:, (stock, "Trade")] == trade_type
-        x_trade = data.loc[mask_trade, (stock, "Close")].index
-        y_trade = data.loc[mask_trade, (stock, "Close")].values
+                    // create a new variable for the data of the column data source
+                    // this is linked to the plot
+                    var data = source.data;
 
-        if trade_type == "Buy":
-            color = "blue"
+                    // allocate the selected column to the field for the y values
+                    data['y_Close'] = data[cb_obj.value];
 
-        else:
-            color = "red"
+                    // register the change - this is required to process the change in 
+                    // the y values
+                    source.change.emit();
+                    """)
 
-        plot.circle(x_trade, y_trade, size=8, color=color, alpha=1,
-                    fill_color="white", legend=trade_type, muted_alpha=0)
+    select.callback = callback
 
 
 
-    return plot
+
+    # plot = figure(plot_width=1500, plot_height = 750, title = 'Close Price',
+    #               x_axis_label = 'Date [Days]', x_axis_type='datetime',
+    #               y_axis_label='Price', tools=[hover, 'box_select', 'box_zoom',
+    #                                            'pan', 'reset', 'save'] )
+    #
+    # plot.line(x="dates", y="price", line_width=linewidth, color="blue", legend="Price",
+    #                 alpha=0.5, line_dash="solid", muted_alpha=0, source=price_source)
+
+    # plot.line(x="dates", y="ewm", line_width=linewidth, color="red", legend="EWM",
+    #           alpha=0.5, line_dash="solid", muted_alpha=0, source=price_source)
+    #
+    # for trade_type in ["Buy", "Sell"]:
+    #
+    #     mask_trade = data.loc[:, (stock, "Trade")] == trade_type
+    #     x_trade = data.loc[mask_trade, (stock, "Close")].index
+    #     y_trade = data.loc[mask_trade, (stock, "Close")].values
+    #
+    #     if trade_type == "Buy":
+    #         color = "blue"
+    #
+    #     else:
+    #         color = "red"
+    #
+    #     plot.circle(x_trade, y_trade, size=8, color=color, alpha=1,
+    #                 fill_color="white", legend=trade_type, muted_alpha=0)
+
+    return plot, select
 
 
 def format_figure(plot):
@@ -165,45 +192,16 @@ def greet():
 
 @app.route("/dev")
 def index():
-    from bokeh.models.widgets import Select
+
 
     greetings = 'Index'
 
     data, source = get_source()
 
-    plot = figure(plot_width=1500, plot_height=750, title='Close Price',
-                  x_axis_label='Date [Days]', x_axis_type='datetime',
-                  y_axis_label='Price')
-
-    print(source)
-    plot.line(x="Date", y="y_Close", line_width=6, color="blue", legend="Price",
-              alpha=0.5, line_dash="solid", muted_alpha=0, source=source)
-
     # Note that the _Close is necessary to read the double-header dataframe
     shares = [column[0] + "_Close" for column in set(data.columns.values.squeeze()) if column[0] != "y"]
+    plot, select = make_figure(source, shares)
 
-    select = Select(title="Option:", value="QBE.AX_Close", options=shares)
-
-    callback = CustomJS(args={'source': source}, code="""
-                // print the selectd value of the select widget - 
-                // this is printed in the browser console.
-                // cb_obj is the callback object, in this case the select 
-                // widget. cb_obj.value is the selected value.
-                console.log(' changed selected option', cb_obj.value);
-
-                // create a new variable for the data of the column data source
-                // this is linked to the plot
-                var data = source.data;
-
-                // allocate the selected column to the field for the y values
-                data['y_Close'] = data[cb_obj.value];
-
-                // register the change - this is required to process the change in 
-                // the y values
-                source.change.emit();
-                """)
-
-    select.callback = callback
     script, div = components({"plot": plot, "select": select})
 
     return render_template('index.html', resources=INLINE.render(),
