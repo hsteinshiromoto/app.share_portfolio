@@ -7,7 +7,7 @@ from flask import Flask, render_template
 
 from bokeh.plotting import figure
 from bokeh.embed import components
-from bokeh.models import HoverTool, ColumnDataSource
+from bokeh.models import HoverTool, ColumnDataSource, CDSView, GroupFilter
 from bokeh.models.widgets import Select
 # The resources are the JS and CSS scripts needed to load the plots
 from bokeh.resources import INLINE
@@ -35,6 +35,7 @@ def get_source(path=None):
 
     data.loc[:, ("y", "Close")] = data.loc[:, ("QBE.AX", "Close")]
     data.loc[:, ("y", "EWM")] = data.loc[:, ("QBE.AX", "EWM")]
+    data.loc[:, ("y", "Trade")] = data.loc[:, ("QBE.AX", "Trade")]
     source = ColumnDataSource(data)
 
     return data, source
@@ -50,7 +51,8 @@ def make_figure(source, shares):
     hover = HoverTool(
         tooltips=[("Date", "@Date{%F}"),
                   ("Price", "@y_Close"),
-                  ("EWM", "@y_EWM")],
+                  ("EWM", "@y_EWM"),
+                  ("Trade", "@y_Trade")],
         formatters={"Date": "datetime"},
         mode='mouse'
     )
@@ -66,6 +68,16 @@ def make_figure(source, shares):
 
     plot.line(x="Date", y="y_EWM", line_width=linewidth, color="red", legend="EWM",
               alpha=0.5, line_dash="solid", muted_alpha=0, source=source)
+
+    buy = CDSView(source=source, filters=[GroupFilter(column_name='y_Trade', group='Buy')])
+
+    plot.circle(x="Date", y="y_Close", size=8, color="blue", alpha=1, source=source,
+                fill_color="white", legend="Buy", muted_alpha=0, view=buy)
+
+    sell = CDSView(source=source, filters=[GroupFilter(column_name='y_Trade', group='Sell')])
+
+    plot.circle(x="Date", y="y_Close", size=8, color="red", alpha=1, source=source,
+                fill_color="white", legend="Sell", muted_alpha=0, view=sell)
 
     select = Select(title="Share Code:", value="QBE.AX", options=shares)
 
@@ -84,6 +96,7 @@ def make_figure(source, shares):
                     // Note that the _Close is necessary to read the double-header dataframe
                     data['y_Close'] = data[cb_obj.value + "_Close"];
                     data['y_EWM'] = data[cb_obj.value + "_EWM"];
+                    data['y_Trade'] = data[cb_obj.value + "_Trade"];
 
                     // register the change - this is required to process the change in 
                     // the y values
@@ -91,23 +104,6 @@ def make_figure(source, shares):
                     """)
 
     select.callback = callback
-
-    # Todo: Plot trading points
-    #
-    # for trade_type in ["Buy", "Sell"]:
-    #
-    #     mask_trade = data.loc[:, (stock, "Trade")] == trade_type
-    #     x_trade = data.loc[mask_trade, (stock, "Close")].index
-    #     y_trade = data.loc[mask_trade, (stock, "Close")].values
-    #
-    #     if trade_type == "Buy":
-    #         color = "blue"
-    #
-    #     else:
-    #         color = "red"
-    #
-    #     plot.circle(x_trade, y_trade, size=8, color=color, alpha=1,
-    #                 fill_color="white", legend=trade_type, muted_alpha=0)
 
     return plot, select
 
@@ -155,7 +151,6 @@ def index():
     greetings = 'Welcome to Bokeh'
 
     data, source = get_source()
-
 
     shares = [column[0] for column in data.columns.values.squeeze() if column[0] != "y"]
     shares = sorted(list(set(shares)))
