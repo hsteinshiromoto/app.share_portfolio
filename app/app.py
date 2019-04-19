@@ -21,6 +21,8 @@ DEFAULT_PLOT_DICT = {"linewidth": 3
                      ,"marker": {"size": 8, "alpha": 1}
                      ,"ticks": {"fontsize": "16pt"}}
 
+
+
 def read_data(path=None):
 
     if not path:
@@ -34,6 +36,24 @@ def read_data(path=None):
     data.index = pd.to_datetime(data.index)
 
     return data
+
+
+def get_source(path=None):
+
+    if not path:
+        paths = get_paths()
+        path = paths.get("data").get("processed")
+
+    filename = get_file(path, extension=".csv", latest=True)
+    filename = os.path.join(path, filename)
+
+    data = pd.read_csv(filename, index_col=0, header=[0, 1])
+    data.index = pd.to_datetime(data.index)
+
+    data.loc[:, ("y", "Close")] = data.loc[:, ("QBE.AX", "Close")]
+    source = ColumnDataSource(data)
+
+    return data, source
 
 
 def make_figure(data, stock):
@@ -143,6 +163,50 @@ def greet():
     return render_template('index.html', resources=INLINE.render(),
                            greetings=greetings, script=script, div=div)
 
+@app.route("/dev")
+def index():
+    from bokeh.models.widgets import Select
+
+    greetings = 'Index'
+
+    data, source = get_source()
+
+    plot = figure(plot_width=1500, plot_height=750, title='Close Price',
+                  x_axis_label='Date [Days]', x_axis_type='datetime',
+                  y_axis_label='Price')
+
+    print(source)
+    plot.line(x="Date", y="y_Close", line_width=6, color="blue", legend="Price",
+              alpha=0.5, line_dash="solid", muted_alpha=0, source=source)
+
+    shares = [column[0] + "_Close" for column in set(data.columns.values.squeeze())]
+
+    select = Select(title="Option:", value="QBE.AX_Close", options=shares)
+
+    callback = CustomJS(args={'source': source}, code="""
+                // print the selectd value of the select widget - 
+                // this is printed in the browser console.
+                // cb_obj is the callback object, in this case the select 
+                // widget. cb_obj.value is the selected value.
+                console.log(' changed selected option', cb_obj.value);
+
+                // create a new variable for the data of the column data source
+                // this is linked to the plot
+                var data = source.data;
+
+                // allocate the selected column to the field for the y values
+                data['y_Close'] = data[cb_obj.value];
+
+                // register the change - this is required to process the change in 
+                // the y values
+                source.change.emit();
+                """)
+
+    select.callback = callback
+    script, div = components({"plot": plot, "select": select})
+
+    return render_template('index.html', resources=INLINE.render(),
+                           greetings=greetings, script=script, div=div)
 
 """"
 An MWE
