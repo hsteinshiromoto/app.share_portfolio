@@ -157,7 +157,8 @@ def index():
     data, source = get_source()
 
 
-    shares = [column[0] for column in set(data.columns.values.squeeze()) if column[0] != "y"]
+    shares = [column[0] for column in data.columns.values.squeeze() if column[0] != "y"]
+    shares = sorted(list(set(shares)))
     plot, select = make_figure(source, shares)
     plot = format_figure(plot)
 
