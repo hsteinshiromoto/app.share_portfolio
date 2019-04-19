@@ -42,8 +42,22 @@ def get_source(path=None):
 
 
 def make_figure(source, shares):
+    """
+    Generates the plot and select objects
 
+    :param source: data source [bokeh.models.sources.ColumnDataSource]
+    :param shares: share prices to be plotted [list]
+    :return: plot, select
+    """
+
+    """
+    1. Definitions
+    """
+
+    # Plot keyarguments definitions
     linewidth = DEFAULT_PLOT_DICT.get("linewidth")
+
+    # Hover object [bokeh.models.HoverTool]
 
     # N.B.: The first argument in the tuples of tooltips must have the same
     # name as those defined in the dict of source
@@ -57,11 +71,17 @@ def make_figure(source, shares):
         mode='mouse'
     )
 
+    # Plot object [bokeh.plotting.figure]
     plot = figure(plot_width=1500, plot_height=750, title='Close Price',
                   x_axis_label='Date [Days]', x_axis_type='datetime',
                   y_axis_label='Price', tools=[hover, 'box_select', 'box_zoom',
                                                'pan', 'reset', 'save'])
 
+    """
+    2. Add Plot Elements
+    """
+
+    # 2.1. Price line plots
     # Note that the _Close is necessary to read the double-header dataframe
     plot.line(x="Date", y="y_Close", line_width=linewidth, color="blue", legend="Price",
               alpha=0.5, line_dash="solid", muted_alpha=0, source=source)
@@ -69,8 +89,10 @@ def make_figure(source, shares):
     plot.line(x="Date", y="y_EWM", line_width=linewidth, color="red", legend="EWM",
               alpha=0.5, line_dash="solid", muted_alpha=0, source=source)
 
+    # 2.2. Filter source data for trading points
     buy = CDSView(source=source, filters=[GroupFilter(column_name='y_Trade', group='Buy')])
 
+    # Plot circles for buy / sell points
     plot.circle(x="Date", y="y_Close", size=8, color="blue", alpha=1, source=source,
                 fill_color="white", legend="Buy", muted_alpha=0, view=buy)
 
@@ -79,8 +101,14 @@ def make_figure(source, shares):
     plot.circle(x="Date", y="y_Close", size=8, color="red", alpha=1, source=source,
                 fill_color="white", legend="Sell", muted_alpha=0, view=sell)
 
+    """
+    3. Define Plot Dynamic Elements
+    """
+
+    # 3.1. Instantiate drop-down menu with shares
     select = Select(title="Share Code:", value="QBE.AX", options=shares)
 
+    # 3.2. Define JS callback to update plot
     callback = CustomJS(args={'source': source}, code="""
                     // print the selectd value of the select widget - 
                     // this is printed in the browser console.
@@ -103,6 +131,7 @@ def make_figure(source, shares):
                     source.change.emit();
                     """)
 
+    # 3.3. Add callback to drop-down menu
     select.callback = callback
 
     return plot, select
