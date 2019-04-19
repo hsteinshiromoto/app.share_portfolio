@@ -23,22 +23,6 @@ DEFAULT_PLOT_DICT = {"linewidth": 3
                      ,"ticks": {"fontsize": "16pt"}}
 
 
-
-def read_data(path=None):
-
-    if not path:
-        paths = get_paths()
-        path = paths.get("data").get("processed")
-
-    filename = get_file(path, extension=".csv", latest=True)
-    filename = os.path.join(path, filename)
-
-    data = pd.read_csv(filename, index_col=0, header=[0, 1])
-    data.index = pd.to_datetime(data.index)
-
-    return data
-
-
 def get_source(path=None):
 
     if not path:
