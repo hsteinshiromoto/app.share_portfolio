@@ -227,3 +227,10 @@ def mwe():
 
 if __name__ == '__main__':
     app.run(debug=True, host="0.0.0.0", port="5000")
+
+"""
+References:
+
+src: https://stackoverflow.com/questions/35298029/embedding-bokeh-plot-and-datatable-in-flask
+src: https://stackoverflow.com/questions/55301063/how-to-embed-a-datatable-widget-in-a-python-flask-web-app
+"""
