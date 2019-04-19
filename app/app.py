@@ -76,10 +76,11 @@ def make_figure(source, shares):
                   y_axis_label='Price', tools=[hover, 'box_select', 'box_zoom',
                                                'pan', 'reset', 'save'])
 
+    # Note that the _Close is necessary to read the double-header dataframe
     plot.line(x="Date", y="y_Close", line_width=linewidth, color="blue", legend="Price",
               alpha=0.5, line_dash="solid", muted_alpha=0, source=source)
 
-    select = Select(title="Option:", value="QBE.AX_Close", options=shares)
+    select = Select(title="Option:", value="QBE.AX", options=shares)
 
     callback = CustomJS(args={'source': source}, code="""
                     // print the selectd value of the select widget - 
@@ -93,7 +94,8 @@ def make_figure(source, shares):
                     var data = source.data;
 
                     // allocate the selected column to the field for the y values
-                    data['y_Close'] = data[cb_obj.value];
+                    // Note that the _Close is necessary to read the double-header dataframe
+                    data['y_Close'] = data[cb_obj.value + "_Close"];
 
                     // register the change - this is required to process the change in 
                     // the y values
@@ -198,8 +200,8 @@ def index():
 
     data, source = get_source()
 
-    # Note that the _Close is necessary to read the double-header dataframe
-    shares = [column[0] + "_Close" for column in set(data.columns.values.squeeze()) if column[0] != "y"]
+
+    shares = [column[0] for column in set(data.columns.values.squeeze()) if column[0] != "y"]
     plot, select = make_figure(source, shares)
 
     script, div = components({"plot": plot, "select": select})
