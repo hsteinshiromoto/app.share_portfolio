@@ -180,7 +180,7 @@ def index():
               alpha=0.5, line_dash="solid", muted_alpha=0, source=source)
 
     # Note that the _Close is necessary to read the double-header dataframe
-    shares = [column[0] + "_Close" for column in set(data.columns.values.squeeze())]
+    shares = [column[0] + "_Close" for column in set(data.columns.values.squeeze()) if column[0] != "y"]
 
     select = Select(title="Option:", value="QBE.AX_Close", options=shares)
 
