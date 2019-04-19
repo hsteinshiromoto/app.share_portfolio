@@ -164,23 +164,6 @@ def format_figure(plot):
 
     return plot
 
-"""
-Check how dynamically plot features:
-
-src: https://stackoverflow.com/questions/35298029/embedding-bokeh-plot-and-datatable-in-flask
-src: https://stackoverflow.com/questions/55301063/how-to-embed-a-datatable-widget-in-a-python-flask-web-app
-"""
-
-@app.route('/')
-def greet():
-    greetings = 'Hello World, I am BOKEH'
-    data = read_data()
-    plot = make_figure(data, "QBE.AX")
-    plot = format_figure(plot)
-    script, div = components({"plot": plot})
-
-    return render_template('index.html', resources=INLINE.render(),
-                           greetings=greetings, script=script, div=div)
 
 @app.route("/dev")
 def index():
