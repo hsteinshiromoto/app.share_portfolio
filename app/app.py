@@ -52,6 +52,7 @@ def get_source(path=None):
     data.index = pd.to_datetime(data.index)
 
     data.loc[:, ("y", "Close")] = data.loc[:, ("QBE.AX", "Close")]
+    data.loc[:, ("y", "EWM")] = data.loc[:, ("QBE.AX", "EWM")]
     source = ColumnDataSource(data)
 
     return data, source
@@ -66,7 +67,8 @@ def make_figure(source, shares):
     # src: https://stackoverflow.com/questions/54316623/how-to-get-the-axis-values-on-the-hovertool-bokeh
     hover = HoverTool(
         tooltips=[("Date", "@Date{%F}"),
-                  ("Price", "@y_Close")],
+                  ("Price", "@y_Close"),
+                  ("EWM", "@y_EWM")],
         formatters={"Date": "datetime"},
         mode='mouse'
     )
@@ -78,6 +80,9 @@ def make_figure(source, shares):
 
     # Note that the _Close is necessary to read the double-header dataframe
     plot.line(x="Date", y="y_Close", line_width=linewidth, color="blue", legend="Price",
+              alpha=0.5, line_dash="solid", muted_alpha=0, source=source)
+
+    plot.line(x="Date", y="y_EWM", line_width=linewidth, color="red", legend="EWM",
               alpha=0.5, line_dash="solid", muted_alpha=0, source=source)
 
     select = Select(title="Option:", value="QBE.AX", options=shares)
@@ -96,6 +101,7 @@ def make_figure(source, shares):
                     // allocate the selected column to the field for the y values
                     // Note that the _Close is necessary to read the double-header dataframe
                     data['y_Close'] = data[cb_obj.value + "_Close"];
+                    data['y_EWM'] = data[cb_obj.value + "_EWM"];
 
                     // register the change - this is required to process the change in 
                     // the y values
