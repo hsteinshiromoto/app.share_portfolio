@@ -164,12 +164,9 @@ def format_figure(plot):
 
     return plot
 
-
-@app.route("/dev")
+@app.route("/")
 def index():
-
-
-    greetings = 'Index'
+    greetings = 'Welcome to Bokeh'
 
     data, source = get_source()
 
