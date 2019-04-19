@@ -85,7 +85,7 @@ def make_figure(source, shares):
     plot.line(x="Date", y="y_EWM", line_width=linewidth, color="red", legend="EWM",
               alpha=0.5, line_dash="solid", muted_alpha=0, source=source)
 
-    select = Select(title="Option:", value="QBE.AX", options=shares)
+    select = Select(title="Share Code:", value="QBE.AX", options=shares)
 
     callback = CustomJS(args={'source': source}, code="""
                     // print the selectd value of the select widget - 
@@ -209,6 +209,7 @@ def index():
 
     shares = [column[0] for column in set(data.columns.values.squeeze()) if column[0] != "y"]
     plot, select = make_figure(source, shares)
+    plot = format_figure(plot)
 
     script, div = components({"plot": plot, "select": select})
 
