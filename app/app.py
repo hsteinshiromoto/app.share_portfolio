@@ -1,7 +1,6 @@
 import os
 
 import pandas as pd
-import numpy as np
 
 from flask import Flask, render_template
 
@@ -22,6 +21,13 @@ DEFAULT_PLOT_DICT = {"linewidth": 3
 
 
 def get_source(path=None):
+    """
+    Load the processed share price table and transform into a bokeh source
+    object
+
+    :param path: str., optional
+    :return: data, source
+    """
 
     if not path:
         paths = get_paths()
@@ -138,6 +144,12 @@ def make_figure(source, shares):
 
 
 def format_figure(plot):
+    """
+    Format bokeh plot object
+
+    :param plot: bokeh.plotting.figure
+    :return: bokeh.plotting.figure
+    """
 
     ticks_fontsize = DEFAULT_PLOT_DICT.get("ticks").get("fontsize")
 
@@ -177,15 +189,21 @@ def format_figure(plot):
 
 @app.route("/")
 def index():
+    # H1 header used in index.html
     greetings = 'Welcome to Bokeh'
 
+    # Get data
     data, source = get_source()
 
+    # Get list of shares from loaded data
     shares = [column[0] for column in data.columns.values.squeeze() if column[0] != "y"]
     shares = sorted(list(set(shares)))
+
+    # Generate the plot figure and format it
     plot, select = make_figure(source, shares)
     plot = format_figure(plot)
 
+    # Generate code to be embedded in the html file
     script, div = components({"plot": plot, "select": select})
 
     return render_template('index.html', resources=INLINE.render(),
