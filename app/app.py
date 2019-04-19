@@ -94,19 +94,7 @@ def make_figure(source, shares):
 
     select.callback = callback
 
-
-
-
-    # plot = figure(plot_width=1500, plot_height = 750, title = 'Close Price',
-    #               x_axis_label = 'Date [Days]', x_axis_type='datetime',
-    #               y_axis_label='Price', tools=[hover, 'box_select', 'box_zoom',
-    #                                            'pan', 'reset', 'save'] )
-    #
-    # plot.line(x="dates", y="price", line_width=linewidth, color="blue", legend="Price",
-    #                 alpha=0.5, line_dash="solid", muted_alpha=0, source=price_source)
-
-    # plot.line(x="dates", y="ewm", line_width=linewidth, color="red", legend="EWM",
-    #           alpha=0.5, line_dash="solid", muted_alpha=0, source=price_source)
+    # Todo: Plot trading points
     #
     # for trade_type in ["Buy", "Sell"]:
     #
