@@ -1,0 +1,107 @@
+stages:
+    - build_container
+    - run_container
+
+# ---
+# CI Setup
+# ---
+
+# Image to use the command "docker"
+image: docker:stable
+
+# Start service to have access to Docker binaries
+services:
+    - docker:dind
+
+variables:
+  image_name: 'hsteinshiromoto/app.share_portfolio:latest'
+
+# ---
+# Build Stage
+# ---
+
+# Build and push container to gitlab registry
+
+build_container:
+  stage: build_container
+  # Need to install make. Note that the default Gitlab 
+  # container Linux distro is Alpine.
+  before_script:
+    - apk add bash make git
+  script:
+    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
+    - make build_gitlab
+    - docker push $CI_REGISTRY/$image_name
+
+# ---
+# Run Stage
+# ---
+
+# Run container
+
+run_container:
+  stage: run_container
+  # Need to install make. Note that the default Gitlab 
+  # container Linux distro is Alpine.
+  before_script:
+    - apk add bash make git
+  script:
+    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
+    - docker pull $CI_REGISTRY/$image_name
+    - sh run_container.sh $CI_REGISTRY/$image_name
+
+# ---
+# Test Default
+# ---
+
+test_default:
+  stage: test_default
+  image: $CI_REGISTRY/$image_name
+  script:
+    - sh run_latex.sh local
+  artifacts:
+    expire_in: 2 weeks
+    paths:
+      - src/$base_filename
+
+# ---
+# Test Letter
+# ---
+
+test_letter:
+  stage: test_letter
+  image: $CI_REGISTRY/$image_name
+  script:
+    - sh run_latex.sh letter
+  artifacts:
+    expire_in: 2 weeks
+    paths:
+      - src/$letter_filename
+
+# ---
+# Test List of Publications
+# ---
+
+test_pub:
+  stage: test_pub
+  image: $CI_REGISTRY/$image_name
+  script:
+    - sh run_latex.sh pub
+  artifacts:
+    expire_in: 2 weeks
+    paths:
+      - src/$pub_filename
+
+# ---
+# Test All
+# ---
+
+test_all:
+  stage: test_all
+  image: $CI_REGISTRY/$image_name
+  script:
+    - sh run_latex.sh all
+  artifacts:
+    expire_in: 2 weeks
+    paths:
+      - src/$all_filename
