@@ -21,6 +21,8 @@ variables:
 # ---
 
 # Build and push container to gitlab registry
+# Note that it requires to login to Docker hub as one image is private from there
+# src: https://imil.net/blog/2018/11/04/From-GitLab-CI-to-Docker-Hub/
 
 build_container:
   stage: build_container
