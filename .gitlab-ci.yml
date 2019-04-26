@@ -1,0 +1,54 @@
+stages:
+    - build_container
+    - run_container
+
+# ---
+# CI Setup
+# ---
+
+# Image to use the command "docker"
+image: docker:stable
+
+# Start service to have access to Docker binaries
+services:
+    - docker:dind
+
+variables:
+  image_name: 'hsteinshiromoto/app.share_portfolio:latest'
+
+# ---
+# Build Stage
+# ---
+
+# Build and push container to gitlab registry
+# Note that it requires to login to Docker hub as one image is private from there
+# src: https://imil.net/blog/2018/11/04/From-GitLab-CI-to-Docker-Hub/
+
+build_container:
+  stage: build_container
+  # Need to install make. Note that the default Gitlab 
+  # container Linux distro is Alpine.
+  before_script:
+    - apk add bash make git
+    - docker login -u $DOCKER_HUB_USER -p "$DOCKER_HUB_PWD" $DOCKER_HUB_REGISTRY
+  script:
+    - make build_gitlab
+    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
+    - docker push $CI_REGISTRY/$image_name
+
+# ---
+# Run Stage
+# ---
+
+# Run container
+
+run_container:
+  stage: run_container
+  # Need to install make. Note that the default Gitlab 
+  # container Linux distro is Alpine.
+  before_script:
+    - apk add bash make git
+  script:
+    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
+    - docker pull $CI_REGISTRY/$image_name
+    - sh run_container.sh $CI_REGISTRY/$image_name
