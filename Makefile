@@ -5,6 +5,8 @@ repo_path=$(shell git rev-parse --show-toplevel)
 repo_name=$(shell basename $(repo_path))
 tag = latest
 
+git_lab_registry = registry.gitlab.com
+
 docker_image = $(docker_user)/$(repo_name):$(tag)
 
 build_date=$(shell date +%Y%m%d-%H:%M:%S)
