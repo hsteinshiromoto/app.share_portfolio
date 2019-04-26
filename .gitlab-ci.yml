@@ -28,9 +28,10 @@ build_container:
   # container Linux distro is Alpine.
   before_script:
     - apk add bash make git
+    - docker login -u $DOCKER_HUB_USER -p "$DOCKER_HUB_PWD" $DOCKER_HUB_REGISTRY
   script:
-    - docker login -u $DOCKER_HUB_USER -p $DOCKER_HUB_PWD
     - make build_gitlab
+    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
     - docker push $CI_REGISTRY/$image_name
 
 # ---
