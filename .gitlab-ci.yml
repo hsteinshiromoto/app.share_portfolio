@@ -16,6 +16,7 @@ services:
 
 variables:
   image_name: 'hsteinshiromoto/app.share_portfolio:latest'
+  python_path: '/home/app.share_portfolio'
 
 # ---
 # Build Stage
@@ -66,6 +67,6 @@ test_make_dataset:
   # container Linux distro is Alpine.
   image: $CI_REGISTRY/$image_name
   before_script:
-    - PYTHONPATH=/home/app.share_portfolio
+    - PYTHONPATH=$python_path
   script:
     - python3 src/tests/test_make_dataset.py
