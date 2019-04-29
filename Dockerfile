@@ -10,7 +10,6 @@ ENV HOME /home/$REPO_NAME
 
 # Create the "home" folder 
 RUN mkdir $HOME
-RUN export PYTHONPATH=$HOME
 
 # Copy necessary files
 COPY requirements.txt $HOME
