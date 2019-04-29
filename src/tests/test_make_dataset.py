@@ -5,18 +5,34 @@ from src.data import make_dataset as md
 
 class TestGetData(unittest.TestCase):
 
-    def setUp(self):
-        portfolio = ["WES", 'QBE']
+    @classmethod
+    def setUpClass(cls):
+        cls.portfolio = ["WES", 'QBE']
 
-        # candidates = ['CUV', 'ALT', "AEF", "AGL", "COH", "BHP", "ALU", "ORG", "CSL",
-        #               "VAS", "WOW", "A2M", "MVF"]
-        #
-        # portfolio.extend(candidates)
+        candidates = ['CUV', 'ALT', "AEF", "AGL", "COH", "BHP", "ALU", "ORG", "CSL",
+                      "VAS", "WOW", "A2M", "MVF"]
+
+        cls.portfolio.extend(candidates)
+
+    @classmethod
+    def tearDownClass(cls):
+        cls.portfolio
+
+    def test_raise_ValueError(self):
+        with self.assertRaises(Exception):
+            try:
+                md.get_data(self.portfolio, "google")
+
+            except ValueError:
+                print("Failed successfully")
+
+            else:
+                raise Exception
 
 
     def test_upper(self):
+        print(self.portfolio)
         self.assertEqual('foo'.upper(), 'FOO')
-        self.assertEqual(portfolio, portfolio)
 
     def test_isupper(self):
         self.assertTrue('FOO'.isupper())
