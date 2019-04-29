@@ -1,6 +1,7 @@
 stages:
     - build_container
     - run_container
+    - test_make_dataset
 
 # ---
 # CI Setup
@@ -52,3 +53,17 @@ run_container:
     - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
     - docker pull $CI_REGISTRY/$image_name
     - sh run_container.sh $CI_REGISTRY/$image_name
+
+# ---
+# Tests Stage
+# ---
+
+# Test make_dataset.py
+
+test_make_dataset:
+  stage: test_make_dataset
+  # Need to install make. Note that the default Gitlab
+  # container Linux distro is Alpine.
+  image: $CI_REGISTRY/$image_name
+  script:
+    - python3 src/tests/test_make_dataset.py
