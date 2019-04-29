@@ -7,10 +7,10 @@ ARG REPO_NAME
 
 # Set enviroment variables
 ENV HOME /home/$REPO_NAME
-ENV PYTHONPATH $HOME
 
 # Create the "home" folder 
 RUN mkdir $HOME
+RUN export PYTHONPATH=$HOME
 
 # Copy necessary files
 COPY requirements.txt $HOME
