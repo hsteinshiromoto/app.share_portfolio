@@ -69,4 +69,7 @@ test_make_dataset:
 #  before_script:
 #    - PYTHONPATH=$python_path
   script:
+    - ls
+#    - @echo PYTHONPATH
+    - echo PYTHONPATH
     - python3 src/tests/test_make_dataset.py
