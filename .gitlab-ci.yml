@@ -69,4 +69,4 @@ test_make_dataset:
   before_script:
     - echo ${PYTHONPATH}
   script:
-    - python3 /home/app.share_portfolio/src/tests/test_make_dataset.py
+    - python3 src/tests/test_make_dataset.py
