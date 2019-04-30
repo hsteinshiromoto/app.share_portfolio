@@ -7,13 +7,6 @@ stages:
 # CI Setup
 # ---
 
-# Image to use the command "docker"
-image: docker:stable
-
-# Start service to have access to Docker binaries
-services:
-    - docker:dind
-
 variables:
   image_name: 'hsteinshiromoto/app.share_portfolio:latest'
   python_path: '/home/app.share_portfolio'
@@ -28,6 +21,14 @@ variables:
 
 build_container:
   stage: build_container
+  # Image to use the command "docker"
+#  only:
+#    - dev
+#    - master
+  image: docker:stable
+  # Start service to have access to Docker binaries
+  services:
+    - docker:dind
   # Need to install make. Note that the default Gitlab 
   # container Linux distro is Alpine.
   before_script:
@@ -46,6 +47,14 @@ build_container:
 
 run_container:
   stage: run_container
+  # Image to use the command "docker"
+  #  only:
+  #    - dev
+  #    - master
+  image: docker:stable
+  # Start service to have access to Docker binaries
+  services:
+    - docker:dind
   # Need to install make. Note that the default Gitlab 
   # container Linux distro is Alpine.
   before_script:
