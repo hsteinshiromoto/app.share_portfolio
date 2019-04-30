@@ -15,8 +15,8 @@ docker_image = $(docker_user)/$(repo_name):$(tag)
 build_date=$(shell date +%Y%m%d-%H:%M:%S)
 
 # Set up env to be used in the container build phase
-include .env
-export $(shell sed 's/=.*//' .env)
+#include .env
+#export $(shell sed 's/=.*//' .env)
 
 # ---
 # Commands
