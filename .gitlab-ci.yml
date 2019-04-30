@@ -9,7 +9,6 @@ stages:
 
 variables:
   image_name: 'hsteinshiromoto/app.share_portfolio:latest'
-  python_path: '/home/app.share_portfolio'
 
 # ---
 # Build Stage
@@ -20,11 +19,11 @@ variables:
 # src: https://imil.net/blog/2018/11/04/From-GitLab-CI-to-Docker-Hub/
 
 build_container:
-  stage: build_container
   # Image to use the command "docker"
-#  only:
-#    - dev
-#    - master
+  stage: build_container
+  only:
+    - dev
+    - master
   image: docker:stable
   # Start service to have access to Docker binaries
   services:
@@ -46,11 +45,11 @@ build_container:
 # Run container
 
 run_container:
-  stage: run_container
   # Image to use the command "docker"
-  #  only:
-  #    - dev
-  #    - master
+  stage: run_container
+  only:
+    - dev
+    - master
   image: docker:stable
   # Start service to have access to Docker binaries
   services:
@@ -76,4 +75,5 @@ test_make_dataset:
   # container Linux distro is Alpine.
   image: $CI_REGISTRY/$image_name
   script:
+    - echo ${PYTHONPATH}
     - python3 src/tests/test_make_dataset.py
