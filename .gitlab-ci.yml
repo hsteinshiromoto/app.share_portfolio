@@ -24,7 +24,6 @@ build_container:
   only:
     - dev
     - master
-    - bugfix/ci_tests
   image: docker:stable
   # Start service to have access to Docker binaries
   services:
@@ -62,7 +61,7 @@ run_container:
     - apk add bash make git
   script:
     - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
-    - docker pull $CI_REGISTRY/$image_name
+    - docker pull $image_name
     - sh run_container.sh $image_name
 
 # ---
