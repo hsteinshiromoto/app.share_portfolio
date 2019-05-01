@@ -28,7 +28,7 @@ build:
 	docker build --build-arg BUILD_DATE=$(build_date) \
 		   --build-arg REPO_NAME=$(repo_name) \
 		   --build-arg DOCKER_IMAGE=$(docker_image) \
-		   --build-arg CI_REGISTRY=$(registry) \
+		   --build-arg REGISTRY=$(registry) \
 		   -t $(docker_image) .
 
 ## Delete all compiled Python files
