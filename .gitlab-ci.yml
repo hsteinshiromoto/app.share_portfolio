@@ -75,5 +75,6 @@ test_make_dataset:
   # container Linux distro is Alpine.
   image: $CI_REGISTRY/$image_name
   script:
+    - git
     - echo ${PYTHONPATH}
     - python3 src/tests/test_make_dataset.py
