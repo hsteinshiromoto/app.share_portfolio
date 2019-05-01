@@ -77,4 +77,5 @@ test_make_dataset:
   script:
     - echo ${PWD}
     - echo ${PYTHONPATH}
+    - export PYTHONPATH=${PWD}
     - python3 src/tests/test_make_dataset.py
