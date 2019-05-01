@@ -4,7 +4,7 @@ import os, sys
 
 # sys.path.append(os.path.dirname(os.path.dirname(os.path.dirname(__file__))))
 
-from ..src.data import make_dataset as md
+from src.data import make_dataset as md
 
 class TestGetData(unittest.TestCase):
 
