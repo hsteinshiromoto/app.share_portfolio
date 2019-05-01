@@ -21,9 +21,10 @@ variables:
 build_container:
   # Image to use the command "docker"
   stage: build_container
- only:
-   - dev
-   - master
+  only:
+    - dev
+    - master
+    - bugfix/ci_tests
   image: docker:stable
   # Start service to have access to Docker binaries
   services:
