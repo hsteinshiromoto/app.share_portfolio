@@ -1,3 +1,7 @@
+jupyter
+jupyter_contrib_nbextensions
+pandas
+scipy
 pandas_datareader
 seaborn
 bokeh
