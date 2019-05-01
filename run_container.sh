@@ -4,7 +4,8 @@ user_name=hsteinshiromoto
 repo_name=$(git rev-parse --show-toplevel)
 repo_name=$(basename ${repo_name})
 registry=registry.gitlab.com
-docker_image=$(registry)/$(user_name)/$(repo_name):$(tag)
+tag=latest
+docker_image=${registry}/${user_name}/${repo_name}:${tag}
 
 # Host folders
 h_folder_code=$(pwd)
