@@ -1,6 +1,8 @@
 FROM python:3.7-slim-stretch
 
-# Get build arguments
+# --- 
+# Build arguments
+# ---
 ARG BUILD_DATE
 ARG REPO_NAME
 ARG DOCKER_IMAGE
@@ -9,7 +11,9 @@ ARG CI_REGISTRY
 # Silence debconf
 ARG DEBIAN_FRONTEND=noninteractive
 
-# Set enviroment variables
+# ---
+# Enviroment variables
+# ---
 ENV LANG=C.UTF-8 \
     LC_ALL=C.UTF-8
 ENV TINI_VERSION v0.6.0
@@ -62,17 +66,6 @@ ENTRYPOINT ["/usr/bin/tini", "--"]
 # ---
 EXPOSE 8888
 CMD ["jupyter", "notebook", "--no-browser", "--ip=0.0.0.0", "--allow-root", "--port=8888"]
-
-
-
-# # Create the "home" folder 
-# RUN mkdir $HOME
-
-# # Copy necessary files
-# COPY requirements.txt $HOME
-
-# #Install requirements from text file
-# RUN pip install -r $HOME/requirements.txt
 
 # Expose Ports
 EXPOSE 5000
