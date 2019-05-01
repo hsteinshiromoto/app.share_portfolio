@@ -1,8 +1,11 @@
 #!/bin/sh
 
+user_name=hsteinshiromoto
 repo_name=$(git rev-parse --show-toplevel)
 repo_name=$(basename ${repo_name})
-docker_image=hsteinshiromoto/${repo_name}:latest
+registry=registry.gitlab.com
+tag=latest
+docker_image=${registry}/${user_name}/${repo_name}:${tag}
 
 # Host folders
 h_folder_code=$(pwd)
