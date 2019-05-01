@@ -75,7 +75,6 @@ test_make_dataset:
   # container Linux distro is Alpine.
   image: $image_name
   script:
-    - echo ${PYTHONPATH}
-    - PYTHONPATH=../${PYTHONPATH}
+    - ${pwd}
     - echo ${PYTHONPATH}
     - python3 src/tests/test_make_dataset.py
