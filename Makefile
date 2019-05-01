@@ -3,14 +3,14 @@
 # ---
 
 # Define container image
-docker_user=hsteinshiromoto
+user_name=hsteinshiromoto
 repo_path=$(shell git rev-parse --show-toplevel)
 repo_name=$(shell basename $(repo_path))
 tag = latest
 
-ci_registry=registry.gitlab.com
+registry=registry.gitlab.com
 
-docker_image=$(ci_registry)/$(docker_user)/$(repo_name):$(tag)
+docker_image=$(registry)/$(user_name)/$(repo_name):$(tag)
 
 build_date=$(shell date +%Y%m%d-%H:%M:%S)
 
@@ -28,7 +28,7 @@ build:
 	docker build --build-arg BUILD_DATE=$(build_date) \
 		   --build-arg REPO_NAME=$(repo_name) \
 		   --build-arg DOCKER_IMAGE=$(docker_image) \
-		   --build-arg CI_REGISTRY=$(ci_registry) \
+		   --build-arg CI_REGISTRY=$(registry) \
 		   -t $(docker_image) .
 
 ## Delete all compiled Python files
