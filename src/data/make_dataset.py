@@ -23,6 +23,13 @@ def get_data(stocks, source, metric="Close", start='2016-01-01', end=None):
     :param end: str., optional
     :return: pandas.DataFrame
     """
+    if source.lower() == "yahoo":
+        stocks = [item + ".AX" for item in stocks]
+
+    else:
+        msg = "The source needs to be yahoo."
+        ValueError(msg)
+
     print("Loading data from {}.".format(source))
 
     if not end:
@@ -104,15 +111,6 @@ def main(stocks, source="yahoo"):
     :param source: str., optinal
     :return: pandas.dataframe
     """
-
-    if source.lower() == "yahoo":
-        stocks = [item + ".AX" for item in stocks]
-
-    else:
-        msg = "The source needs to be yahoo."
-        ValueError(msg)
-
-    paths = get_paths()
 
     """
     Get stock prices 

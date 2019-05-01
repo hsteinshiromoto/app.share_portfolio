@@ -1,17 +1,11 @@
 stages:
     - build_container
     - run_container
+    - test_make_dataset
 
 # ---
 # CI Setup
 # ---
-
-# Image to use the command "docker"
-image: docker:stable
-
-# Start service to have access to Docker binaries
-services:
-    - docker:dind
 
 variables:
   image_name: 'hsteinshiromoto/app.share_portfolio:latest'
@@ -25,7 +19,15 @@ variables:
 # src: https://imil.net/blog/2018/11/04/From-GitLab-CI-to-Docker-Hub/
 
 build_container:
+  # Image to use the command "docker"
   stage: build_container
+ only:
+   - dev
+   - master
+  image: docker:stable
+  # Start service to have access to Docker binaries
+  services:
+    - docker:dind
   # Need to install make. Note that the default Gitlab 
   # container Linux distro is Alpine.
   before_script:
@@ -43,7 +45,15 @@ build_container:
 # Run container
 
 run_container:
+  # Image to use the command "docker"
   stage: run_container
+  only:
+    - dev
+    - master
+  image: docker:stable
+  # Start service to have access to Docker binaries
+  services:
+    - docker:dind
   # Need to install make. Note that the default Gitlab 
   # container Linux distro is Alpine.
   before_script:
@@ -52,3 +62,19 @@ run_container:
     - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
     - docker pull $CI_REGISTRY/$image_name
     - sh run_container.sh $CI_REGISTRY/$image_name
+
+# ---
+# Tests Stage
+# ---
+
+# Test make_dataset.py
+
+test_make_dataset:
+  stage: test_make_dataset
+  # Need to install make. Note that the default Gitlab
+  # container Linux distro is Alpine.
+  image: $CI_REGISTRY/$image_name
+  script:
+    - git
+    - echo ${PYTHONPATH}
+    - python3 src/tests/test_make_dataset.py
