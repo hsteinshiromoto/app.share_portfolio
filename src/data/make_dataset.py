@@ -48,7 +48,6 @@ def get_data(stocks, source, metric="Close", start='2016-01-01', end=None):
     return data
 
 
-def save_data(data, filename=None, path=None):
 def input_data(data, missing_values_tolerance=5):
     """
     Input missing values with forward fill
@@ -76,6 +75,7 @@ def input_data(data, missing_values_tolerance=5):
 
 
 def load_previous_dataset(filename=None, path=None):
+    # For future use
     """
     Get the latest date of the existing dataset
 
@@ -106,6 +106,29 @@ def load_previous_dataset(filename=None, path=None):
     return data
 
 
+def save_data(data, filename=None, path=None):
+    """
+    Save pandas.dataframe to folder
+
+    :param data: pandas.DataFrame
+    :param filename: str., optional
+    :param path: str., optional
+    :return:
+    """
+
+    if not path:
+        paths = get_paths()
+        path = paths.get("data").get("interim")
+
+    if not filename:
+        filename = str(datetime.now().date()) + ".csv"
+
+    full_filename = os.path.join(path, filename)
+    data.to_csv(full_filename)
+
+    return None
+
+
 def main(stocks, source="yahoo"):
     """
     Generates dataframe with price values of selected stocks
@@ -122,6 +145,7 @@ def main(stocks, source="yahoo"):
     # data = load_previous_dataset(filename=None, path=None)
 
     # if data is not None:
+
     #     previous_stocks_list = [item[0] for item in data.columns.values.squeeze()]
     #     missing_stocks = set(stocks).symmetric_difference(set(previous_stocks_list))
     #     latest_date = data.index[-1].date()
@@ -152,6 +176,9 @@ def main(stocks, source="yahoo"):
     save_data(data, filename=None, path=None)
 
     return data
+
+
+
 
 if __name__ == "__main__":
 
