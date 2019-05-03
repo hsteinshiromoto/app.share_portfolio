@@ -27,7 +27,7 @@ def get_data(stocks, source, metric="Close", start='2016-01-01', end=None):
 
     else:
         msg = "The source needs to be yahoo."
-        ValueError(msg)
+        raise ValueError(msg)
 
     print("Loading data from {}.".format(source))
 
@@ -48,30 +48,36 @@ def get_data(stocks, source, metric="Close", start='2016-01-01', end=None):
     return data
 
 
-def save_data(data, filename=None, path=None):
+def input_data(data, missing_values_tolerance=5.0):
+    # Todo: Create a config file and define missing_values_tolerance there
     """
-    Save pandas.dataframe to folder
+    Input missing values with forward fill
 
     :param data: pandas.DataFrame
-    :param filename: str., optional
-    :param path: str., optional
-    :return:
+    :param missing_values_tolerance: float, optional
+    :return: pandas.DataFrame
     """
 
-    if not path:
-        paths = get_paths()
-        path = paths.get("data").get("interim")
+    missing_data = data.isnull().sum().to_frame()
 
-    if not filename:
-        filename = str(datetime.now().date()) + ".csv"
+    new_column_name = "Count of Missing Values"
 
-    full_filename = os.path.join(path, filename)
-    data.to_csv(full_filename)
+    missing_data.rename(columns={0: new_column_name}, inplace=True)
+    missing_data = missing_data[missing_data[new_column_name] > 0]
+    missing_data.loc[:, "%"] = missing_data[new_column_name] / data.shape[0] * 100.0
 
-    return None
+    if missing_data["%"].max() > missing_values_tolerance:
+        msg = f"Tolerance of missing values is {missing_values_tolerance}%. " \
+              f"Values could not be fetched:\n{missing_data}."
+        raise ValueError(msg)
+
+    data.fillna(method="ffill", inplace=True)
+
+    return data
 
 
 def load_previous_dataset(filename=None, path=None):
+    # For future use
     """
     Get the latest date of the existing dataset
 
@@ -102,6 +108,29 @@ def load_previous_dataset(filename=None, path=None):
     return data
 
 
+def save_data(data, filename=None, path=None):
+    """
+    Save pandas.dataframe to folder
+
+    :param data: pandas.DataFrame
+    :param filename: str., optional
+    :param path: str., optional
+    :return:
+    """
+
+    if not path:
+        paths = get_paths()
+        path = paths.get("data").get("interim")
+
+    if not filename:
+        filename = str(datetime.now().date()) + ".csv"
+
+    full_filename = os.path.join(path, filename)
+    data.to_csv(full_filename)
+
+    return None
+
+
 def main(stocks, source="yahoo"):
     """
     Generates dataframe with price values of selected stocks
@@ -114,43 +143,12 @@ def main(stocks, source="yahoo"):
     """
     Get stock prices 
     """
-    # Todo: This commented stuff is broken
-    # data = load_previous_dataset(filename=None, path=None)
-
-    # if data is not None:
-    #     previous_stocks_list = [item[0] for item in data.columns.values.squeeze()]
-    #     missing_stocks = set(stocks).symmetric_difference(set(previous_stocks_list))
-    #     latest_date = data.index[-1].date()
-    #     date_equal = latest_date != datetime.now().date()
-    #
-    #     full_filename = paths.get("data").get("interim")
-    #     full_filename = os.path.join(full_filename, "{}.csv".format(latest_date.strftime("%Y-%m-%d")))
-    #     os.remove(full_filename)
-    #
-    #     if date_equal & (len(missing_stocks) == 0):
-    #         new_data = get_data(stocks, source, start=latest_date.strftime("%Y-%m-%d"))
-    #         data = pd.concat([data, new_data])
-    #
-    # else:
     data = get_data(stocks, source)
 
     """
     Clean data
     """
-    # Clean missing values
-    # Todo: Create a config file and define missing_values_tolerance there
-    missing_values_tolerance = 5
-    missing_data = data.isnull().sum().to_frame()
-    new_column_name = "Count of Missing Values"
-    missing_data.rename(columns={0: new_column_name}, inplace=True)
-    missing_data = missing_data[missing_data[new_column_name] > 0]
-    missing_data.loc[:, "%"] = missing_data[new_column_name] / data.shape[0] * 100.0
-
-    if missing_data["%"].max() > missing_values_tolerance:
-        msg = "Values could not be fetched:\n{}.".format(missing_data)
-        raise ValueError(msg)
-
-    data.fillna(method="ffill", inplace=True)
+    data = input_data(data)
 
     """
     Return/save the data
@@ -159,6 +157,7 @@ def main(stocks, source="yahoo"):
     save_data(data, filename=None, path=None)
 
     return data
+
 
 if __name__ == "__main__":
 
@@ -171,4 +170,3 @@ if __name__ == "__main__":
 
     main(portfolio)
 
-    # print(load_latest_date(filename=None, path=None))
