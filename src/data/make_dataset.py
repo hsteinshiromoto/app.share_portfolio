@@ -1,4 +1,3 @@
-import pandas_datareader as pdr
 import pandas as pd
 import os
 import warnings
@@ -35,7 +34,7 @@ def get_data(stocks, source, metric="Close", start='2016-01-01', end=None):
     if not end:
         end = str(datetime.now().date())
 
-    downloaded_data = pdr.get_data_yahoo(stocks, start=start, end=end)[metric]
+    downloaded_data = yf.download(stocks, start=start, end=end)[metric]
 
     columns = pd.MultiIndex.from_product([stocks, [metric]])
     data = pd.DataFrame(columns=columns, index=downloaded_data.index)
