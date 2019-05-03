@@ -49,6 +49,7 @@ def get_data(stocks, source, metric="Close", start='2016-01-01', end=None):
 
 
 def input_data(data, missing_values_tolerance=5):
+    # Todo: Create a config file and define missing_values_tolerance there
     """
     Input missing values with forward fill
 
@@ -141,32 +142,11 @@ def main(stocks, source="yahoo"):
     """
     Get stock prices 
     """
-    # Todo: This commented stuff is broken
-    # data = load_previous_dataset(filename=None, path=None)
-
-    # if data is not None:
-
-    #     previous_stocks_list = [item[0] for item in data.columns.values.squeeze()]
-    #     missing_stocks = set(stocks).symmetric_difference(set(previous_stocks_list))
-    #     latest_date = data.index[-1].date()
-    #     date_equal = latest_date != datetime.now().date()
-    #
-    #     full_filename = paths.get("data").get("interim")
-    #     full_filename = os.path.join(full_filename, "{}.csv".format(latest_date.strftime("%Y-%m-%d")))
-    #     os.remove(full_filename)
-    #
-    #     if date_equal & (len(missing_stocks) == 0):
-    #         new_data = get_data(stocks, source, start=latest_date.strftime("%Y-%m-%d"))
-    #         data = pd.concat([data, new_data])
-    #
-    # else:
     data = get_data(stocks, source)
 
     """
     Clean data
     """
-    # Clean missing values
-    # Todo: Create a config file and define missing_values_tolerance there
     data = input_data(data)
 
     """
@@ -176,8 +156,6 @@ def main(stocks, source="yahoo"):
     save_data(data, filename=None, path=None)
 
     return data
-
-
 
 
 if __name__ == "__main__":
@@ -191,4 +169,3 @@ if __name__ == "__main__":
 
     main(portfolio)
 
-    # print(load_latest_date(filename=None, path=None))
