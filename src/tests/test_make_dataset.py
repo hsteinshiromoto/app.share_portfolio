@@ -6,16 +6,14 @@ import os, sys
 
 from src.data import make_dataset as md
 
+DEFAULT_PORTFOLIO = ["WES", 'QBE', 'CUV', 'ALT', "AEF", "AGL", "COH", "BHP",
+                     "ALU", "ORG", "CSL", "VAS", "WOW", "A2M", "MVF"]
+
 class TestGetData(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
-        cls.portfolio = ["WES", 'QBE']
-
-        candidates = ['CUV', 'ALT', "AEF", "AGL", "COH", "BHP", "ALU", "ORG", "CSL",
-                      "VAS", "WOW", "A2M", "MVF"]
-
-        cls.portfolio.extend(candidates)
+        cls.portfolio = DEFAULT_PORTFOLIO
 
 
     @classmethod
