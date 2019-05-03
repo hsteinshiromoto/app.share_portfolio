@@ -49,26 +49,30 @@ def get_data(stocks, source, metric="Close", start='2016-01-01', end=None):
 
 
 def save_data(data, filename=None, path=None):
+def input_data(data, missing_values_tolerance=5):
     """
-    Save pandas.dataframe to folder
+    Input missing values with forward fill
 
     :param data: pandas.DataFrame
-    :param filename: str., optional
-    :param path: str., optional
-    :return:
+    :param missing_values_tolerance: int., optional
+    :return: pandas.DataFrame
     """
 
-    if not path:
-        paths = get_paths()
-        path = paths.get("data").get("interim")
+    missing_data = data.isnull().sum().to_frame()
 
-    if not filename:
-        filename = str(datetime.now().date()) + ".csv"
+    new_column_name = "Count of Missing Values"
 
-    full_filename = os.path.join(path, filename)
-    data.to_csv(full_filename)
+    missing_data.rename(columns={0: new_column_name}, inplace=True)
+    missing_data = missing_data[missing_data[new_column_name] > 0]
+    missing_data.loc[:, "%"] = missing_data[new_column_name] / data.shape[0] * 100.0
 
-    return None
+    if missing_data["%"].max() > missing_values_tolerance:
+        msg = "Values could not be fetched:\n{}.".format(missing_data)
+        raise ValueError(msg)
+
+    data.fillna(method="ffill", inplace=True)
+
+    return data
 
 
 def load_previous_dataset(filename=None, path=None):
@@ -139,18 +143,7 @@ def main(stocks, source="yahoo"):
     """
     # Clean missing values
     # Todo: Create a config file and define missing_values_tolerance there
-    missing_values_tolerance = 5
-    missing_data = data.isnull().sum().to_frame()
-    new_column_name = "Count of Missing Values"
-    missing_data.rename(columns={0: new_column_name}, inplace=True)
-    missing_data = missing_data[missing_data[new_column_name] > 0]
-    missing_data.loc[:, "%"] = missing_data[new_column_name] / data.shape[0] * 100.0
-
-    if missing_data["%"].max() > missing_values_tolerance:
-        msg = "Values could not be fetched:\n{}.".format(missing_data)
-        raise ValueError(msg)
-
-    data.fillna(method="ffill", inplace=True)
+    data = input_data(data)
 
     """
     Return/save the data
