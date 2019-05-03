@@ -1,8 +1,6 @@
 import unittest
 import pandas as pd
-import os, sys
-
-# sys.path.append(os.path.dirname(os.path.dirname(os.path.dirname(__file__))))
+import numpy as np
 
 from src.data import make_dataset as md
 
@@ -35,14 +33,42 @@ class TestInput_data(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
-        cls.portfolio = DEFAULT_PORTFOLIO
-        cls.data = md.get_data(self.portfolio, "yahoo")
+        # Create data set with missing values
+
+        # Definitions
+        n_samples = 100
+        cls.missing_values_tolerance = np.random.randint(10)
+        data_array = np.array(range(n_samples))
+        indices_with_nulls =  np.random.randint(n_samples,
+                                                size=cls.missing_values_tolerance)
+
+        cls.data_no_nulls = pd.DataFrame(data_array, columns=["Feature"])
+        # Do not remove the .copy() from the data frame
+        cls.data_with_nulls = cls.data_no_nulls.copy()
+        cls.data_with_nulls.loc[indices_with_nulls, :] = np.nan
 
 
     @classmethod
     def tearDownClass(cls):
-        cls.portfolio
-        cls.data
+        cls.missing_values_tolerance
+        cls.data_no_nulls
+        cls.data_with_nulls
+
+
+    def test_output(self):
+        data_no_nulls = md.input_data(self.data_no_nulls)
+        # Do not remove the .copy() from the data frame
+        data_with_nulls = md.input_data(self.data_with_nulls.copy(),
+                                        missing_values_tolerance=self.missing_values_tolerance)
+        self.assertEqual(data_no_nulls.isnull().sum().sum(), 0)
+        self.assertEqual(data_with_nulls.isnull().sum().sum(), 0)
+
+
+    def test_raise_ValueError(self):
+        self.assertNotEqual(self.data_with_nulls.isnull().sum().sum(), 0)
+        self.assertRaises(ValueError, md.input_data, self.data_with_nulls,
+                          self.missing_values_tolerance / 10)
+
 
 
 if __name__ == "__main__":
