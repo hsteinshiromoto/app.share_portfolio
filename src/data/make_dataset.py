@@ -48,13 +48,13 @@ def get_data(stocks, source, metric="Close", start='2016-01-01', end=None):
     return data
 
 
-def input_data(data, missing_values_tolerance=5):
+def input_data(data, missing_values_tolerance=5.0):
     # Todo: Create a config file and define missing_values_tolerance there
     """
     Input missing values with forward fill
 
     :param data: pandas.DataFrame
-    :param missing_values_tolerance: int., optional
+    :param missing_values_tolerance: float, optional
     :return: pandas.DataFrame
     """
 
@@ -67,7 +67,8 @@ def input_data(data, missing_values_tolerance=5):
     missing_data.loc[:, "%"] = missing_data[new_column_name] / data.shape[0] * 100.0
 
     if missing_data["%"].max() > missing_values_tolerance:
-        msg = "Values could not be fetched:\n{}.".format(missing_data)
+        msg = f"Tolerance of missing values is {missing_values_tolerance}%. " \
+              f"Values could not be fetched:\n{missing_data}."
         raise ValueError(msg)
 
     data.fillna(method="ffill", inplace=True)
