@@ -22,21 +22,28 @@ class TestGetData(unittest.TestCase):
 
 
     def test_raise_ValueError(self):
-        with self.assertRaises(Exception):
-            try:
-                md.get_data(self.portfolio, "google")
-
-            except ValueError:
-                print("Failed successfully")
-
-            else:
-                raise Exception
+        self.assertRaises(ValueError, md.get_data, self.portfolio, "google")
 
 
     def test_Output(self):
         data = md.get_data(self.portfolio, "yahoo")
         self.assertIsInstance(data, pd.DataFrame)
         self.assertEqual(data.shape[1], len(self.portfolio))
+
+
+class TestInput_data(unittest.TestCase):
+
+    @classmethod
+    def setUpClass(cls):
+        cls.portfolio = DEFAULT_PORTFOLIO
+        cls.data = md.get_data(self.portfolio, "yahoo")
+
+
+    @classmethod
+    def tearDownClass(cls):
+        cls.portfolio
+        cls.data
+
 
 if __name__ == "__main__":
     unittest.main()

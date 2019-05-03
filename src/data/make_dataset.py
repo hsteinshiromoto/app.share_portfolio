@@ -27,7 +27,7 @@ def get_data(stocks, source, metric="Close", start='2016-01-01', end=None):
 
     else:
         msg = "The source needs to be yahoo."
-        ValueError(msg)
+        raise ValueError(msg)
 
     print("Loading data from {}.".format(source))
 
