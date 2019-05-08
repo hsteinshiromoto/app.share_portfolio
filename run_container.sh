@@ -6,11 +6,6 @@ repo_name=$(basename ${repo_name})
 registry=registry.gitlab.com
 tag=latest
 
-RED='\033[1;31m'
-BLUE='\033[1;34m'
-GREEN='\033[1;32m'
-NC='\033[0m'
-
 # Host folders
 h_folder_code=$(pwd)
 
@@ -44,7 +39,7 @@ port1=$(docker ps -f "ancestor=${docker_image}" | grep -o "0.0.0.0:[0-9]*->[0-9]
 port2=$(docker ps -f "ancestor=${docker_image}" | grep -o "0.0.0.0:[0-9]*->[0-9]*" | cut -d ":" -f 2 | sed -n 2p)
 token=$(docker logs ${container_id} | tac | grep -o "token=[a-z0-9]*" | sed -n 1p | cut -d "=" -f 2)
 
-echo "Container ID: ${RED}${container_id}${NC}"
-echo "Port mappings: ${BLUE}${port1}, ${port2}${NC}"
-echo "Jupyter token: ${GREEN}${token}${NC}"
+echo "Container ID: ${container_id}"
+echo "Port mappings: ${port1}, ${port2}"
+echo "Jupyter token: ${token}"
 docker exec -it ${container_id} /bin/bash
