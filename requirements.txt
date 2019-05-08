@@ -1,4 +1,4 @@
-requests<2.20
+requests<2.20 #It must be smaller than 2.20 for fix_yahoo_finance
 jupyter
 jupyter_contrib_nbextensions
 pandas
