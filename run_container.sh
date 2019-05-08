@@ -47,4 +47,3 @@ token=$(docker logs ${container_id} | tac | grep -o "token=[a-z0-9]*" | sed -n 1
 echo "Container ID: ${RED}${container_id}${NC}"
 echo "Port mappings: ${BLUE}${port1}, ${port2}${NC}"
 echo "Jupyter token: ${GREEN}${token}${NC}"
-docker exec -it ${container_id} /bin/bash
