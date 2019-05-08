@@ -77,5 +77,6 @@ CMD ["jupyter", "notebook", "--no-browser", "--ip=0.0.0.0", "--allow-root", "--p
 
 # Expose Ports
 EXPOSE 5000
+CMD python3 ${PROJECT_ROOT}/app/app.py
 
 WORKDIR $PROJECT_ROOT
