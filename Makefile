@@ -22,6 +22,16 @@ build_date=$(shell date +%Y%m%d-%H:%M:%S)
 # Commands
 # ---
 
+## Build container locally
+buildlocal:
+	@echo "Building docker image $(docker_image)"
+	docker build --build-arg BUILD_DATE=$(build_date) \
+		   --build-arg REPO_NAME=$(repo_name) \
+		   --build-arg DOCKER_IMAGE=$(docker_image) \
+		   --build-arg REGISTRY=$(registry) \
+		   --build-arg FILES="requirements.txt" \
+		   -t $(docker_image) .
+
 ## Build container
 build:
 	@echo "Building docker image $(docker_image)"
@@ -29,6 +39,7 @@ build:
 		   --build-arg REPO_NAME=$(repo_name) \
 		   --build-arg DOCKER_IMAGE=$(docker_image) \
 		   --build-arg REGISTRY=$(registry) \
+		   --build-arg FILES=. \
 		   -t $(docker_image) .
 
 ## Delete all compiled Python files

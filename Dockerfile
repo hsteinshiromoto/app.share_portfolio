@@ -7,6 +7,7 @@ ARG BUILD_DATE
 ARG REPO_NAME
 ARG DOCKER_IMAGE
 ARG REGISTRY
+ARG FILES
 
 # Silence debconf
 ARG DEBIAN_FRONTEND=noninteractive
@@ -43,7 +44,7 @@ RUN mkdir -p $PROJECT_ROOT
 # ---
 # Set up the necessary Python packages
 # ---
-COPY requirements.txt $PROJECT_ROOT
+COPY $FILES $PROJECT_ROOT
 RUN pip install --upgrade pip && pip install -r $PROJECT_ROOT/requirements.txt
 
 # ---
