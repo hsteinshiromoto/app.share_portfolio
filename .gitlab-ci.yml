@@ -73,6 +73,9 @@ run_container:
 
 test_make_dataset:
   stage: test_make_dataset
+  only:
+    - dev
+    - master
   # Need to install make. Note that the default Gitlab
   # container Linux distro is Alpine.
   image: $image_name
