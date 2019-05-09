@@ -1,3 +1,5 @@
+# https://webcaptioner.com/blog/2017/12/deploy-from-gitlab-to-aws-fargate/
+
 stages:
     - build_container
     - run_container
