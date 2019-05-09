@@ -110,7 +110,7 @@ deploy_container:
   script:
     # - scp deploy.sh $HOST_USER@:$HOST_ADDRESS:REMOTE_FOLDER
     - echo $HOST_ADDRESS
-    - ssh -i ~/.ssh/key.pem $HOST_ADDRESS
+    - ssh -tt -i ~/.ssh/key.pem $HOST_ADDRESS
     - ssh $HOST_USER@$HOST_ADDRESS 'sudo snap install docker'
     - ssh $HOST_USER@$HOST_ADDRESS 'docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY'
     - ssh $HOST_USER@$HOST_ADDRESS 'docker pull $image_name'
