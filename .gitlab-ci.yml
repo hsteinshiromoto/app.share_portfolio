@@ -10,9 +10,9 @@ stages:
 
 variables:
   image_name: 'registry.gitlab.com/hsteinshiromoto/app.share_portfolio:latest'
-  REMOTE_FOLDER: ~
-  HOST_USER: ubuntu
-  HOST_ADDRESS: ec2-54-206-36-102.ap-southeast-2.compute.amazonaws.com
+  REMOTE_FOLDER: "~"
+  HOST_USER: "ubuntu"
+  HOST_ADDRESS: "ec2-54-206-36-102.ap-southeast-2.compute.amazonaws.com"
 
 # ---
 # Build Stage
@@ -86,8 +86,6 @@ test_make_dataset:
 # ---
 # Deploy Stage
 # ---
-
-# Test make_dataset.py
 
 deploy_container:
   # Image to use the command "docker"
