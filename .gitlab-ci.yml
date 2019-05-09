@@ -11,8 +11,6 @@ stages:
 variables:
   image_name: 'registry.gitlab.com/hsteinshiromoto/app.share_portfolio:latest'
   REMOTE_FOLDER: "~"
-  HOST_USER: "ubuntu"
-  HOST_ADDRESS: "ec2-54-206-36-102.ap-southeast-2.compute.amazonaws.com"
 
 # ---
 # Build Stage
@@ -101,7 +99,7 @@ deploy_container:
   # Need to install make. Note that the default Gitlab 
   # container Linux distro is Alpine.
   before_script:
-    - apk add bash make git ssh
+    - apk add bash make git openssh
   script:
     # - scp deploy.sh $HOST_USER@:$HOST_ADDRESS:REMOTE_FOLDER
     - ssh $HOST_USER@$HOST_ADDRESS 'sudo snap install docker'
