@@ -103,34 +103,13 @@ deploy_container:
   # container Linux distro is Alpine.
   before_script:
     - apk add bash make git openssh
-    # ##
-    ## Install ssh-agent if not already installed, it is required by Docker.
-    ## (change apt-get to yum if you use an RPM-based image)
-    ##
-    - 'which ssh-agent || ( apt-get update -y && apt-get install openssh-client -y )'
-
-    ##
-    ## Run ssh-agent (inside the build environment)
-    ##
-    - eval $(ssh-agent -s)
-
-    ##
-    ## Add the SSH key stored in SSH_PRIVATE_KEY variable to the agent store
-    ## We're using tr to fix line endings which makes ed25519 keys work
-    ## without extra base64 encoding.
-    ## https://gitlab.com/gitlab-examples/ssh-private-key/issues/1#note_48526556
-    ##
-    - echo $AWS_SSH | tr -d '\r' | ssh-add - > /dev/null
-
-    ##
-    ## Create the SSH directory and give it the right permissions
-    ##
     - mkdir -p ~/.ssh
+    - echo $AWS_SSH > ~/.ssh/key.pem
     - chmod 700 ~/.ssh
 
   script:
     # - scp deploy.sh $HOST_USER@:$HOST_ADDRESS:REMOTE_FOLDER
-    # - ssh -i $AWS_SSH $HOST_USER@$HOST_ADDRESS "ls"
+    - ssh -i ~/.ssh/key.pem $HOST_USER@$HOST_ADDRESS "ls"
     - ssh $HOST_USER@$HOST_ADDRESS 'sudo snap install docker'
     - ssh $HOST_USER@$HOST_ADDRESS 'docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY'
     - ssh $HOST_USER@$HOST_ADDRESS 'docker pull $image_name'
