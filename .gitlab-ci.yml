@@ -104,10 +104,9 @@ deploy_container:
   before_script:
     - apk add bash make git openssh
     - mkdir -p ~/.ssh
-    - echo $AWS_SSH > ~/.ssh/key.pem
+    - echo $AWS_SSH | tr -d '\r' > ~/.ssh/key.pem
     - chmod 700 ~/.ssh
     - chmod 400 ~/.ssh/key.pem
-    - ssh-keygen -f ~/.ssh/key.pem
 
   script:
     # - scp deploy.sh $HOST_USER@:$HOST_ADDRESS:REMOTE_FOLDER
