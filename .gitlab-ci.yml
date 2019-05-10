@@ -113,7 +113,7 @@ deploy_container:
     - echo $HOST_USER
     - echo $HOST_ADDRESS
     # - ssh-keygen -R 54.206.36.102
-    - ssh -i ~/.ssh/key.pem -t -t $HOST_USER@$HOST_ADDRESS
+    - ssh -o "StrictHostKeyChecking no" -i ~/.ssh/key.pem -t -t $HOST_USER@$HOST_ADDRESS
     - ssh $HOST_USER@$HOST_ADDRESS 'sudo snap install docker'
     - ssh $HOST_USER@$HOST_ADDRESS 'docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY'
     - ssh $HOST_USER@$HOST_ADDRESS 'docker pull $image_name'
