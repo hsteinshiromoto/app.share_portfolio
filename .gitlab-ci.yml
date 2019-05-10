@@ -106,6 +106,7 @@ deploy_container:
     - mkdir -p ~/.ssh
     - echo $AWS_SSH > ~/.ssh/key.pem
     - chmod 700 ~/.ssh
+    - chmod 400 ~/.ssh/key.pem
 
   script:
     # - scp deploy.sh $HOST_USER@:$HOST_ADDRESS:REMOTE_FOLDER
