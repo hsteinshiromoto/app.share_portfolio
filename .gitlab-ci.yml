@@ -104,7 +104,9 @@ deploy_container:
   before_script:
     - apk add bash make git openssh
     - mkdir -p ~/.ssh
-    - echo $AWS_SSH | tr -d '\r' | ssh-add - > ~/.ssh/key.pem
+    - echo "-----BEGIN RSA PRIVATE KEY-----" > ~/.ssh/key.pem
+    - echo $AWS_SSH | sed -e 's/-----BEGIN RSA PRIVATE KEY-----\(.*\)-----END RSA PRIVATE KEY-----/\1/' |  tr " " "\n" | tail -c +2 | head -c -1 >> ~/.ssh/key.pem
+    - echo "-----END RSA PRIVATE KEY-----" >> ~/.ssh/key.pem
     - chmod 700 ~/.ssh
     - chmod 400 ~/.ssh/key.pem
 
