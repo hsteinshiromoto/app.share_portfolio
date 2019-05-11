@@ -107,6 +107,7 @@ deploy_container:
     - echo "-----BEGIN RSA PRIVATE KEY-----" > ~/.ssh/key.pem
     - echo $AWS_SSH | sed -e 's/-----BEGIN RSA PRIVATE KEY-----\(.*\)-----END RSA PRIVATE KEY-----/\1/' |  tr " " "\n" | tail -c +2 | head -c -1 >> ~/.ssh/key.pem
     - echo "-----END RSA PRIVATE KEY-----" >> ~/.ssh/key.pem
+    - echo ~/.ssh/key.pem
     - chmod 700 ~/.ssh
     - chmod 400 ~/.ssh/key.pem
 
