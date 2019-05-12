@@ -102,7 +102,10 @@ deploy_container:
   # Need to install make. Note that the default Gitlab 
   # container Linux distro is Alpine.
   before_script:
+    # Install packages in host
     - apk add bash make git openssh
+
+    # Prepare SSH key
     - mkdir -p ~/.ssh
     - echo "-----BEGIN RSA PRIVATE KEY-----" > ~/.ssh/key.pem
     - echo $AWS_SSH | sed -e 's/-----BEGIN RSA PRIVATE KEY-----\(.*\)-----END RSA PRIVATE KEY-----/\1/' |  tr " " "\n" | tail -c +2 | head -c -1 >> ~/.ssh/key.pem
@@ -111,10 +114,16 @@ deploy_container:
     - chmod 700 ~/.ssh
     - chmod 400 ~/.ssh/key.pem
 
+    - echo "export CI_REGISTRY_USER=$CI_REGISTRY_USER" > ~/.ssh/.env
+    - echo "export CI_REGISTRY_PASSWORD=$CI_REGISTRY_PASSWORD" >> ~/.ssh/.env
+    - echo "export CI_REGISTRY=$CI_REGISTRY" >> ~/.ssh/.env
+
   script:
     # - scp deploy.sh $HOST_USER@:$HOST_ADDRESS:REMOTE_FOLDER
     - ssh -o "StrictHostKeyChecking no" -i ~/.ssh/key.pem -t -t $HOST_USER@$HOST_ADDRESS 'sudo snap install docker'
-    # - ssh $HOST_USER@$HOST_ADDRESS 'sudo snap install docker'
+
+    - scp ~/.ssh/.env $HOST_USER@:$HOST_ADDRESS:REMOTE_FOLDER:~/.ssh/.env
+    - ssh $HOST_USER@$HOST_ADDRESS 'source ~/.ssh/.env'
     - ssh $HOST_USER@$HOST_ADDRESS 'docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY'
     - ssh $HOST_USER@$HOST_ADDRESS 'docker pull $image_name'
     - ssh $HOST_USER@$HOST_ADDRESS 'docker run -p 80:5000 $image_name'
