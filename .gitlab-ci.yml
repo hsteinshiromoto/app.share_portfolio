@@ -110,19 +110,17 @@ deploy_container:
     - echo "-----BEGIN RSA PRIVATE KEY-----" > ~/.ssh/key.pem
     - echo $AWS_SSH | sed -e 's/-----BEGIN RSA PRIVATE KEY-----\(.*\)-----END RSA PRIVATE KEY-----/\1/' |  tr " " "\n" | tail -c +2 | head -c -1 >> ~/.ssh/key.pem
     - echo "-----END RSA PRIVATE KEY-----" >> ~/.ssh/key.pem
-    - cat ~/.ssh/key.pem
     - chmod 700 ~/.ssh
     - chmod 400 ~/.ssh/key.pem
-
-    - echo "export CI_REGISTRY_USER=$CI_REGISTRY_USER" > ~/.ssh/.bash_rc
-    - echo "export CI_REGISTRY_PASSWORD=$CI_REGISTRY_PASSWORD" >> ~/.ssh/.bash_rc
-    - echo "export CI_REGISTRY=$CI_REGISTRY" >> ~/.ssh/.bash_rc
+    - echo "export CI_REGISTRY_USER=$CI_REGISTRY_USER" > ~/.bash_rc
+    - echo "export CI_REGISTRY_PASSWORD=$CI_REGISTRY_PASSWORD" >> ~/.bash_rc
+    - echo "export CI_REGISTRY=$CI_REGISTRY" >> ~/.bash_rc
 
   script:
     # - scp deploy.sh $HOST_USER@:$HOST_ADDRESS:REMOTE_FOLDER
     - ssh -o "StrictHostKeyChecking no" -i ~/.ssh/key.pem -t -t $HOST_USER@$HOST_ADDRESS 'sudo snap install docker'
 
-    - scp ~/.ssh/.env $HOST_USER@:$HOST_ADDRESS:~/.bash_rc
+    - scp -i ~/.ssh/key.pem ~/.bash_rc $HOST_USER@$HOST_ADDRESS:~
     - ssh $HOST_USER@$HOST_ADDRESS 'source ~/.bash_rc'
     - ssh $HOST_USER@$HOST_ADDRESS 'docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY'
     - ssh $HOST_USER@$HOST_ADDRESS 'docker pull $image_name'
