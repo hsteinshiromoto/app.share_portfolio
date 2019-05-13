@@ -121,7 +121,7 @@ deploy_container:
     - ssh -o "StrictHostKeyChecking no" -i ~/.ssh/key.pem -t -t $HOST_USER@$HOST_ADDRESS 'sudo snap install docker'
 
     - scp -i ~/.ssh/key.pem ~/.bash_rc $HOST_USER@$HOST_ADDRESS:~
-    - ssh $HOST_USER@$HOST_ADDRESS 'source ~/.bash_rc'
-    - ssh $HOST_USER@$HOST_ADDRESS 'docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY'
-    - ssh $HOST_USER@$HOST_ADDRESS 'docker pull $image_name'
-    - ssh $HOST_USER@$HOST_ADDRESS 'docker run -p 80:5000 $image_name'
+    - ssh -i ~/.ssh/key.pem $HOST_USER@$HOST_ADDRESS 'source ~/.bash_rc'
+    - ssh -i ~/.ssh/key.pem $HOST_USER@$HOST_ADDRESS 'docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY'
+    - ssh -i ~/.ssh/key.pem $HOST_USER@$HOST_ADDRESS 'docker pull $image_name'
+    - ssh -i ~/.ssh/key.pem $HOST_USER@$HOST_ADDRESS 'docker run -p 80:5000 $image_name'
