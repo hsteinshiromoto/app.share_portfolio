@@ -119,7 +119,10 @@ deploy_container:
   script:
     # - scp deploy.sh $HOST_USER@:$HOST_ADDRESS:REMOTE_FOLDER
     - ssh -o "StrictHostKeyChecking no" -i ~/.ssh/key.pem -t -t $HOST_USER@$HOST_ADDRESS 'sudo snap install docker'
-
+    - ssh -o "StrictHostKeyChecking no" -i ~/.ssh/key.pem -t -t $HOST_USER@$HOST_ADDRESS 'sudo groupadd docker'
+    - ssh -o "StrictHostKeyChecking no" -i ~/.ssh/key.pem -t -t $HOST_USER@$HOST_ADDRESS 'sudo usermod -aG docker $USER'
+    - ssh -o "StrictHostKeyChecking no" -i ~/.ssh/key.pem -t -t $HOST_USER@$HOST_ADDRESS 'sudo setfacl -m user:$USER:rw /var/run/docker.sock'
+    - ssh -o "StrictHostKeyChecking no" -i ~/.ssh/key.pem -t -t $HOST_USER@$HOST_ADDRESS 'docker run hello-world'
     - scp -i ~/.ssh/key.pem ~/.bash_rc $HOST_USER@$HOST_ADDRESS:~
     - ssh -i ~/.ssh/key.pem $HOST_USER@$HOST_ADDRESS 'source ~/.bash_rc'
     - ssh -i ~/.ssh/key.pem $HOST_USER@$HOST_ADDRESS 'docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY'
