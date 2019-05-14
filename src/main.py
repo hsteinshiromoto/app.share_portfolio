@@ -46,7 +46,7 @@ if __name__ == "__main__":
     portfolio = ["WES", 'QBE']
 
     candidates = ['CUV', 'ALT', "AEF", "AGL", "COH", "BHP", "ALU", "ORG", "CSL",
-                  "VAS", "WOW", "A2M", "MVF"]
+                  "VAS", "WOW", "A2M", "MVF", "IAG", "COL"]
 
     portfolio.extend(candidates)
 
