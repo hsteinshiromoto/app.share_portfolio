@@ -70,14 +70,8 @@ run_container:
 # ---
 
 # Test make_dataset.py
-
 test_make_dataset:
   stage: test_make_dataset
-  only:
-    - dev
-    - master
-  # Need to install make. Note that the default Gitlab
-  # container Linux distro is Alpine.
   image: $image_name
   before_script:
     - export PYTHONPATH=${PWD}
@@ -94,7 +88,6 @@ deploy_container:
   only:
     - dev
     - master
-    - feature/deploy_AWS
   image: docker:stable
   # Start service to have access to Docker binaries
   services:
