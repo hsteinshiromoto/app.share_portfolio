@@ -112,17 +112,16 @@ deploy_container:
     - echo "-----END RSA PRIVATE KEY-----" >> ~/.ssh/key.pem
     - chmod 700 ~/.ssh
     - chmod 400 ~/.ssh/key.pem
-    - echo "export CI_REGISTRY_USER=$CI_REGISTRY_USER" > ~/.bashrc
-    - echo "export CI_REGISTRY_PASSWORD=$CI_REGISTRY_PASSWORD" >> ~/.bashrc
-    - echo "export CI_REGISTRY=$CI_REGISTRY" >> ~/.bashrc
     - ssh -o "StrictHostKeyChecking no" -i ~/.ssh/key.pem -t -t $HOST_USER@$HOST_ADDRESS 'sudo apt-get update && sudo apt-get upgrade -y && sudo apt-get install docker.io -y'
+    # Use single quotes below to evalutate the variable $USER in the remote host
+    # src: https://stackoverflow.com/questions/3314660/passing-variables-in-remote-ssh-command
     - ssh -o "StrictHostKeyChecking no" -i ~/.ssh/key.pem -t -t $HOST_USER@$HOST_ADDRESS 'sudo usermod -aG docker $USER'
     - ssh -o "StrictHostKeyChecking no" -i ~/.ssh/key.pem -t -t $HOST_USER@$HOST_ADDRESS 'sudo setfacl -m user:$USER:rw /var/run/docker.sock'
 
   script:
-    # - scp deploy.sh $HOST_USER@:$HOST_ADDRESS:REMOTE_FOLDER
-    - scp -i ~/.ssh/key.pem ~/.bashrc $HOST_USER@$HOST_ADDRESS:~
-    # - ssh -i ~/.ssh/key.pem $HOST_USER@$HOST_ADDRESS -t -t 'source ~/.bashrc'
+    # - scp -i ~/.ssh/key.pem ~/.bashrc $HOST_USER@$HOST_ADDRESS:~
+    # Use double quotes below to evalutate the varuables $CI_* in the local ci runner
+    # src: https://stackoverflow.com/questions/3314660/passing-variables-in-remote-ssh-command
     - ssh -i ~/.ssh/key.pem $HOST_USER@$HOST_ADDRESS -t -t "docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY"
-    - ssh -i ~/.ssh/key.pem $HOST_USER@$HOST_ADDRESS -t -t 'docker pull $image_name'
-    - ssh -i ~/.ssh/key.pem $HOST_USER@$HOST_ADDRESS -t -t 'docker run -p 80:5000 $image_name'
+    - ssh -i ~/.ssh/key.pem $HOST_USER@$HOST_ADDRESS -t -t "docker pull $image_name"
+    - ssh -i ~/.ssh/key.pem $HOST_USER@$HOST_ADDRESS -t -t "docker run -p 80:5000 $image_name"
