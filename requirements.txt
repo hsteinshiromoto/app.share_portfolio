@@ -5,6 +5,7 @@ pandas
 scipy
 pandas_datareader
 seaborn
+sched
 bokeh
 flask
 gitpython
