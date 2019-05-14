@@ -124,4 +124,5 @@ deploy_container:
     # src: https://stackoverflow.com/questions/3314660/passing-variables-in-remote-ssh-command
     - ssh -i ~/.ssh/key.pem $HOST_USER@$HOST_ADDRESS -t -t "docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY"
     - ssh -i ~/.ssh/key.pem $HOST_USER@$HOST_ADDRESS -t -t "docker pull $image_name"
-    - ssh -i ~/.ssh/key.pem $HOST_USER@$HOST_ADDRESS -t -t "docker run -p 80:5000 $image_name"
+    # For future use
+    # - ssh -i ~/.ssh/key.pem $HOST_USER@$HOST_ADDRESS -t -t "docker run -p 80:5000 $image_name"
