@@ -1,9 +1,8 @@
-# https://webcaptioner.com/blog/2017/12/deploy-from-gitlab-to-aws-fargate/
-
 stages:
     - build_container
     - run_container
     - test_make_dataset
+    - deploy_container
 
 # ---
 # CI Setup
@@ -11,6 +10,7 @@ stages:
 
 variables:
   image_name: 'registry.gitlab.com/hsteinshiromoto/app.share_portfolio:latest'
+  REMOTE_FOLDER: "~"
 
 # ---
 # Build Stage
@@ -70,13 +70,52 @@ run_container:
 # ---
 
 # Test make_dataset.py
-
 test_make_dataset:
   stage: test_make_dataset
-  # Need to install make. Note that the default Gitlab
-  # container Linux distro is Alpine.
   image: $image_name
   before_script:
     - export PYTHONPATH=${PWD}
   script:
     - python3 src/tests/test_make_dataset.py
+
+# ---
+# Deploy Stage
+# ---
+
+deploy_container:
+  # Image to use the command "docker"
+  stage: deploy_container
+  only:
+    - dev
+    - master
+  image: docker:stable
+  # Start service to have access to Docker binaries
+  services:
+    - docker:dind
+  # Need to install make. Note that the default Gitlab 
+  # container Linux distro is Alpine.
+  before_script:
+    # Install packages in host
+    - apk add bash make git openssh
+
+    # Prepare SSH key
+    - mkdir -p ~/.ssh
+    - echo "-----BEGIN RSA PRIVATE KEY-----" > ~/.ssh/key.pem
+    - echo $AWS_SSH | sed -e 's/-----BEGIN RSA PRIVATE KEY-----\(.*\)-----END RSA PRIVATE KEY-----/\1/' |  tr " " "\n" | tail -c +2 | head -c -1 >> ~/.ssh/key.pem
+    - echo "-----END RSA PRIVATE KEY-----" >> ~/.ssh/key.pem
+    - chmod 700 ~/.ssh
+    - chmod 400 ~/.ssh/key.pem
+    - ssh -o "StrictHostKeyChecking no" -i ~/.ssh/key.pem -t -t $HOST_USER@$HOST_ADDRESS 'sudo apt-get update && sudo apt-get upgrade -y && sudo apt-get install docker.io -y'
+    # Use single quotes below to evalutate the variable $USER in the remote host
+    # src: https://stackoverflow.com/questions/3314660/passing-variables-in-remote-ssh-command
+    - ssh -o "StrictHostKeyChecking no" -i ~/.ssh/key.pem -t -t $HOST_USER@$HOST_ADDRESS 'sudo usermod -aG docker $USER'
+    - ssh -o "StrictHostKeyChecking no" -i ~/.ssh/key.pem -t -t $HOST_USER@$HOST_ADDRESS 'sudo setfacl -m user:$USER:rw /var/run/docker.sock'
+
+  script:
+    # - scp -i ~/.ssh/key.pem ~/.bashrc $HOST_USER@$HOST_ADDRESS:~
+    # Use double quotes below to evalutate the varuables $CI_* in the local ci runner
+    # src: https://stackoverflow.com/questions/3314660/passing-variables-in-remote-ssh-command
+    - ssh -i ~/.ssh/key.pem $HOST_USER@$HOST_ADDRESS -t -t "docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY"
+    - ssh -i ~/.ssh/key.pem $HOST_USER@$HOST_ADDRESS -t -t "docker pull $image_name"
+    # For future use
+    # - ssh -i ~/.ssh/key.pem $HOST_USER@$HOST_ADDRESS -t -t "docker run -p 80:5000 $image_name"
