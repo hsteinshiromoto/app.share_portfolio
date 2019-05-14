@@ -112,9 +112,9 @@ deploy_container:
     - echo "-----END RSA PRIVATE KEY-----" >> ~/.ssh/key.pem
     - chmod 700 ~/.ssh
     - chmod 400 ~/.ssh/key.pem
-    - echo "export CI_REGISTRY_USER=$CI_REGISTRY_USER" > ~/.bash_rc
-    - echo "export CI_REGISTRY_PASSWORD=$CI_REGISTRY_PASSWORD" >> ~/.bash_rc
-    - echo "export CI_REGISTRY=$CI_REGISTRY" >> ~/.bash_rc
+    - echo "export CI_REGISTRY_USER=$CI_REGISTRY_USER" > ~/.bash_profile
+    - echo "export CI_REGISTRY_PASSWORD=$CI_REGISTRY_PASSWORD" >> ~/.bash_profile
+    - echo "export CI_REGISTRY=$CI_REGISTRY" >> ~/.bash_profile
     - ssh -o "StrictHostKeyChecking no" -i ~/.ssh/key.pem -t -t $HOST_USER@$HOST_ADDRESS 'sudo apt-get update && sudo apt-get upgrade -y && sudo apt-get install docker.io -y'
     - ssh -o "StrictHostKeyChecking no" -i ~/.ssh/key.pem -t -t $HOST_USER@$HOST_ADDRESS 'sudo usermod -aG docker $USER'
     - ssh -o "StrictHostKeyChecking no" -i ~/.ssh/key.pem -t -t $HOST_USER@$HOST_ADDRESS 'sudo setfacl -m user:$USER:rw /var/run/docker.sock'
@@ -123,8 +123,8 @@ deploy_container:
     # - scp deploy.sh $HOST_USER@:$HOST_ADDRESS:REMOTE_FOLDER
     - ssh -o "StrictHostKeyChecking no" -i ~/.ssh/key.pem -t -t $HOST_USER@$HOST_ADDRESS 'whoami && groups && echo $PATH'
     - ssh -o "StrictHostKeyChecking no" -i ~/.ssh/key.pem -t -t $HOST_USER@$HOST_ADDRESS 'docker run hello-world'
-    - scp -i ~/.ssh/key.pem ~/.bash_rc $HOST_USER@$HOST_ADDRESS:~
-    - ssh -i ~/.ssh/key.pem $HOST_USER@$HOST_ADDRESS -t -t 'source ~/.bash_rc'
+    - scp -i ~/.ssh/key.pem ~/.bash_profile $HOST_USER@$HOST_ADDRESS:~
+    - ssh -i ~/.ssh/key.pem $HOST_USER@$HOST_ADDRESS -t -t 'source ~/.bash_profile'
     - ssh -i ~/.ssh/key.pem $HOST_USER@$HOST_ADDRESS -t -t 'docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY'
     - ssh -i ~/.ssh/key.pem $HOST_USER@$HOST_ADDRESS -t -t 'docker pull $image_name'
     - ssh -i ~/.ssh/key.pem $HOST_USER@$HOST_ADDRESS -t -t 'docker run -p 80:5000 $image_name'
