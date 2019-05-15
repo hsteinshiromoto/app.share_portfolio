@@ -34,9 +34,7 @@ LABEL org.label-schema.build-date=$BUILD_DATE \
 # ---
 # Set up the necessary Debian packages
 # ---
-
-# Install git
-RUN apt update && apt install -y git procps
+RUN apt update && apt install -y git procps cron sudo
 
 # Create the "home" folder 
 RUN mkdir -p $PROJECT_ROOT
