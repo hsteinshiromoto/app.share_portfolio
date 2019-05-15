@@ -61,6 +61,18 @@ RUN chmod +x /usr/bin/tini
 ENTRYPOINT ["/usr/bin/tini", "--"]
 
 # ---
+# Schedule time run of Python script
+# ---
+
+# src: https://medium.com/@jonbaldie/how-to-run-cron-jobs-inside-docker-containers-26964315b582
+# src: https://stackoverflow.com/questions/49992618/best-practices-to-run-cron-job-from-a-docker-stack
+# src: https://stackoverflow.com/questions/55096382/how-to-run-cron-job-in-docker-container
+COPY crontab /etc/cron.d/cjob
+RUN chmod 0644 /etc/cron.d/cjob
+RUN service cron start
+CMD cron -f
+
+# ---
 # Setup User
 # ---
 
