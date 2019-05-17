@@ -67,10 +67,10 @@ ENTRYPOINT ["/usr/bin/tini", "--"]
 # src: https://medium.com/@jonbaldie/how-to-run-cron-jobs-inside-docker-containers-26964315b582
 # src: https://stackoverflow.com/questions/49992618/best-practices-to-run-cron-job-from-a-docker-stack
 # src: https://stackoverflow.com/questions/55096382/how-to-run-cron-job-in-docker-container
-COPY crontab /etc/cron.d/cjob
-RUN chmod 0644 /etc/cron.d/cjob
-RUN service cron start
-CMD cron -f
+# RUN service cron start
+RUN cron
+
+COPY schedule $PROJECT_ROOT
 
 # ---
 # Setup User
