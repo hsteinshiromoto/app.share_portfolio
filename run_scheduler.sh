@@ -12,6 +12,6 @@ echo "Activating cron ..."
 docker exec -u root -i ${container_id} sh -c "cron"
 echo "Done"
 
-echo "Adding taks to crontab ..."
+echo "Adding tasks to crontab ..."
 docker exec -i ${container_id} sh -c "cat schedule | crontab -"
 echo "Done"
