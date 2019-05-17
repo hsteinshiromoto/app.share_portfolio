@@ -1,2 +1,1 @@
-* * * * * app.share_portfolio echo "HELLO" >> /home/app.share_portfolio/cron.log
-# Mandatory blank line
+* * * * * echo "HELLO" >> /home/app.share_portfolio/schedule.log
