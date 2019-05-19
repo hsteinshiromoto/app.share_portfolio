@@ -1,1 +1,1 @@
-* * * * * echo "$(date) | Running src/main.py ..." && PYTHONPATH=/home/app.share_portfolio $(which python) /home/app.share_portfolio/src/main.py >> /home/app.share_portfolio/schedule.log 2>&1
+0 18,19,21 * * 1,5 echo "$(date) | Running src/main.py ..." && PYTHONPATH=/home/app.share_portfolio $(which python) /home/app.share_portfolio/src/main.py >> /home/app.share_portfolio/schedule.log 2>&1
