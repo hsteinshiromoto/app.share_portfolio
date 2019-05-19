@@ -1,3 +1,5 @@
+#!/usr/local/bin/python
+
 import os
 
 from datetime import datetime
@@ -46,7 +48,7 @@ if __name__ == "__main__":
     portfolio = ["WES", 'QBE']
 
     candidates = ['CUV', 'ALT', "AEF", "AGL", "COH", "BHP", "ALU", "ORG", "CSL",
-                  "VAS", "WOW", "A2M", "MVF"]
+                  "VAS", "WOW", "A2M", "MVF", "IAG"]
 
     portfolio.extend(candidates)
 

@@ -34,9 +34,7 @@ LABEL org.label-schema.build-date=$BUILD_DATE \
 # ---
 # Set up the necessary Debian packages
 # ---
-
-# Install git
-RUN apt update && apt install -y git procps
+RUN apt update && apt install -y git procps cron sudo
 
 # Create the "home" folder 
 RUN mkdir -p $PROJECT_ROOT
@@ -61,6 +59,18 @@ RUN jupyter contrib nbextension install --system && \
 ADD https://github.com/krallin/tini/releases/download/${TINI_VERSION}/tini /usr/bin/tini
 RUN chmod +x /usr/bin/tini
 ENTRYPOINT ["/usr/bin/tini", "--"]
+
+# ---
+# Schedule time run of Python script
+# ---
+
+# src: https://medium.com/@jonbaldie/how-to-run-cron-jobs-inside-docker-containers-26964315b582
+# src: https://stackoverflow.com/questions/49992618/best-practices-to-run-cron-job-from-a-docker-stack
+# src: https://stackoverflow.com/questions/55096382/how-to-run-cron-job-in-docker-container
+# RUN service cron start
+RUN cron
+
+COPY schedule $PROJECT_ROOT
 
 # ---
 # Setup User
