@@ -1,1 +1,1 @@
-* * * * * echo "HELLO" >> /home/app.share_portfolio/schedule.log
+* * * * * echo "$(date) | Running src/main.py ..." && $(which python) /home/app.share_portfolio/src/main.py >> /home/app.share_portfolio/schedule.log 2>&1
