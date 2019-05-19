@@ -118,5 +118,6 @@ deploy_container:
     - ssh -i ~/.ssh/key.pem $HOST_USER@$HOST_ADDRESS -t -t "docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY"
     - ssh -i ~/.ssh/key.pem $HOST_USER@$HOST_ADDRESS -t -t "docker pull $image_name"
     # For future use
+    - scp -i ~/.ssh/key.pem ~/run_scheduler.sh $HOST_USER@$HOST_ADDRESS:~
     - ssh -i ~/.ssh/key.pem $HOST_USER@$HOST_ADDRESS -t -t "sh run_scheduler.sh"
     - ssh -i ~/.ssh/key.pem $HOST_USER@$HOST_ADDRESS -t -t "docker run -p 80:5000 $image_name"
