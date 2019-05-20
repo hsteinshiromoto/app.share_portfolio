@@ -14,6 +14,6 @@ docker exec -u root -i ${container_id} sh -c "cron"
 echo "Done"
 
 echo "Adding tasks to crontab ..."
-docker exec -i ${container_id} sh -c "chmod +x ~/src/main.py"
+docker exec -u root -i ${container_id} sh -c "chmod +x /home/app.share_portfolio/src/main.py"
 docker exec -i ${container_id} sh -c "cat schedule | crontab -"
 echo "Done"
