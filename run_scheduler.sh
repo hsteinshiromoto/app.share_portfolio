@@ -1,8 +1,9 @@
 #!/bin/sh
 
 user_name=hsteinshiromoto
-repo_name=$(git rev-parse --show-toplevel)
-repo_name=$(basename ${repo_name})
+# repo_name=$(git rev-parse --show-toplevel)
+# repo_name=$(basename ${repo_name})
+repo_name=app.share_portfolio
 registry=registry.gitlab.com
 tag=latest
 docker_image=${registry}/${user_name}/${repo_name}:${tag}
