@@ -120,5 +120,6 @@ deploy_container:
     - ssh -i ~/.ssh/key.pem $HOST_USER@$HOST_ADDRESS -t -t "docker pull $image_name"
     # For future use
     - scp -i ~/.ssh/key.pem ${PWD}/run_scheduler.sh $HOST_USER@$HOST_ADDRESS:~
-    - ssh -i ~/.ssh/key.pem $HOST_USER@$HOST_ADDRESS -t -t "sh run_scheduler.sh"
-    - ssh -i ~/.ssh/key.pem $HOST_USER@$HOST_ADDRESS -t -t "docker run -p 80:5000 $image_name"
+    - scp -i ~/.ssh/key.pem ${PWD}/run_container.sh $HOST_USER@$HOST_ADDRESS:~
+    - ssh -i ~/.ssh/key.pem $HOST_USER@$HOST_ADDRESS -t -t "sh run_container.sh"
+    # - ssh -i ~/.ssh/key.pem $HOST_USER@$HOST_ADDRESS -t -t "docker run -p 80:5000 $image_name"
