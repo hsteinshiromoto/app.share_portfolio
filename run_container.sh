@@ -1,8 +1,9 @@
 #!/bin/sh
 
 user_name=hsteinshiromoto
-repo_name=$(git rev-parse --show-toplevel)
-repo_name=$(basename ${repo_name})
+# repo_name=$(git rev-parse --show-toplevel)
+# repo_name=$(basename ${repo_name})
+repo_name=app.share_portfolio
 registry=registry.gitlab.com
 tag=latest
 
@@ -21,13 +22,12 @@ docker_image=${registry}/${user_name}/${repo_name}:${tag}
 
 container_id=$(docker ps -qf "ancestor=${docker_image}")
 
-if [ -z "$container_id" ] && [ $1 = "local" ];
-then
+if [ -z "$container_id" ] && [ $1 = "local" ]; then
 	echo "Creating container from image ${docker_image}"
 	docker run -d -P -v ${h_folder_code}:${d_folder_code} -t ${docker_image}
 	container_id=$(docker ps -qf "ancestor=${docker_image}")
 
-elif [ -z "$container_id" ];
+elif [ -z "$container_id" ]
 then 
 	echo "Creating container from image ${docker_image}"
 	docker run -d -p 80:5000 -t ${docker_image}
