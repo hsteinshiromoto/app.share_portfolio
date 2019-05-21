@@ -33,19 +33,22 @@ then
 	docker run -d -p 80:5000 -t ${docker_image}
 	container_id=$(docker ps -qf "ancestor=${docker_image}")
 
-	# echo "Starting Jupyter server ..."
-	# docker exec -i ${container_id} sh -c "jupyter notebook --no-browser --ip=0.0.0.0 --port=8888"
-	# echo "Done"
-
 else
 	echo "Container already running"
 
 fi
+
+# Need to change permissions on folder $user/.local/share/jupyter for user app.share_portfolio
+# before starting Jupyter server
+docker exec -u root -i ${container_id} sh -c "chown -R ${repo_name}:${repo_name} /home/${repo_name}/.local/share/jupyter"
+echo "Starting Jupyter server ..."
+docker exec -d -i ${container_id} sh -c "jupyter notebook --no-browser --ip=0.0.0.0 --port=8888"
+echo "Done"
 	
 port1=$(docker ps -f "ancestor=${docker_image}" | grep -o "0.0.0.0:[0-9]*->[0-9]*" | cut -d ":" -f 2 | head -n 1)
 port2=$(docker ps -f "ancestor=${docker_image}" | grep -o "0.0.0.0:[0-9]*->[0-9]*" | cut -d ":" -f 2 | sed -n 2p)
-# token=$(docker exec -i ${container_id} sh -c "jupyter notebook list" | tac | grep -o "token=[a-z0-9]*" | sed -n 1p | cut -d "=" -f 2)
+token=$(docker exec -i ${container_id} sh -c "jupyter notebook list" | tac | grep -o "token=[a-z0-9]*" | sed -n 1p | cut -d "=" -f 2)
 
 echo "Container ID: ${RED}${container_id}${NC}"
 echo "Port mappings: ${BLUE}${port1}, ${port2}${NC}"
-# echo "Jupyter token: ${GREEN}${token}${NC}"
+echo "Jupyter token: ${GREEN}${token}${NC}"
