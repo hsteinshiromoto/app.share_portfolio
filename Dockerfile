@@ -83,7 +83,6 @@ USER $REPO_NAME
 # Setup container ports and start Jupyter server
 # ---
 EXPOSE 8888
-CMD ["jupyter", "notebook", "--no-browser", "--ip=0.0.0.0", "--allow-root", "--port=8888"]
 
 
 # Expose Ports
