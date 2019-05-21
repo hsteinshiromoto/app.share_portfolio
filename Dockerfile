@@ -80,14 +80,13 @@ RUN useradd --create-home -s /bin/bash $REPO_NAME
 USER $REPO_NAME
 
 # ---
-# Setup container ports and start Jupyter server
+# Setup container ports and start flask server
 # ---
 EXPOSE 8888
-CMD ["jupyter", "notebook", "--no-browser", "--ip=0.0.0.0", "--allow-root", "--port=8888"]
-
 
 # Expose Ports
 EXPOSE 5000
+
 CMD python3 ${PROJECT_ROOT}/app/app.py
 
 WORKDIR $PROJECT_ROOT

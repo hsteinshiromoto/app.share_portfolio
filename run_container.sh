@@ -22,12 +22,12 @@ docker_image=${registry}/${user_name}/${repo_name}:${tag}
 
 container_id=$(docker ps -qf "ancestor=${docker_image}")
 
-if [ -z "$container_id" ] && [ $1 = "local" ]; then
+if [[ -z "$container_id" ]] && [[ $1 = "local" ]]; then
 	echo "Creating container from image ${docker_image}"
 	docker run -d -P -v ${h_folder_code}:${d_folder_code} -t ${docker_image}
 	container_id=$(docker ps -qf "ancestor=${docker_image}")
 
-elif [ -z "$container_id" ]
+elif [[ -z "$container_id" ]]
 then 
 	echo "Creating container from image ${docker_image}"
 	docker run -d -p 80:5000 -t ${docker_image}
@@ -37,6 +37,13 @@ else
 	echo "Container already running"
 
 fi
+
+# Need to change permissions on folder $user/.local/share/jupyter for user app.share_portfolio
+# before starting Jupyter server
+docker exec -u root -i ${container_id} sh -c "chown -R ${repo_name}:${repo_name} /home/${repo_name}/.local/share/jupyter"
+echo "Starting Jupyter server ..."
+docker exec -d -i ${container_id} sh -c "jupyter notebook --no-browser --ip=0.0.0.0 --port=8888"
+echo "Done"
 	
 port1=$(docker ps -f "ancestor=${docker_image}" | grep -o "0.0.0.0:[0-9]*->[0-9]*" | cut -d ":" -f 2 | head -n 1)
 port2=$(docker ps -f "ancestor=${docker_image}" | grep -o "0.0.0.0:[0-9]*->[0-9]*" | cut -d ":" -f 2 | sed -n 2p)
