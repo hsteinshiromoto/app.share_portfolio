@@ -76,8 +76,8 @@ COPY schedule $PROJECT_ROOT
 # Setup User
 # ---
 
-RUN useradd --create-home -s /bin/bash $REPO_NAME
-USER $REPO_NAME
+# RUN useradd --create-home -s /bin/bash $REPO_NAME
+# USER $REPO_NAME
 
 # ---
 # Setup container ports and start flask server
