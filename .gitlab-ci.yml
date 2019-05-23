@@ -106,7 +106,7 @@ deploy_container:
     - echo "-----END RSA PRIVATE KEY-----" >> ~/.ssh/key.pem
     - chmod 700 ~/.ssh
     - chmod 400 ~/.ssh/key.pem
-    - ssh -o "StrictHostKeyChecking no" -i ~/.ssh/key.pem -t -t $HOST_USER@$HOST_ADDRESS 'sudo apt-get update && sudo apt-get upgrade -y && sudo apt-get install docker.io -y'
+    # - ssh -o "StrictHostKeyChecking no" -i ~/.ssh/key.pem -t -t $HOST_USER@$HOST_ADDRESS 'sudo apt-get update && sudo apt-get upgrade -y && sudo apt-get install docker.io -y'
     # Use single quotes below to evalutate the variable $USER in the remote host
     # src: https://stackoverflow.com/questions/3314660/passing-variables-in-remote-ssh-command
     - ssh -o "StrictHostKeyChecking no" -i ~/.ssh/key.pem -t -t $HOST_USER@$HOST_ADDRESS 'sudo usermod -aG docker $USER'
