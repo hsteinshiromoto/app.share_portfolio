@@ -22,15 +22,18 @@ docker_image=${registry}/${user_name}/${repo_name}:${tag}
 
 container_id=$(docker ps -qf "ancestor=${docker_image}")
 
-if [[ -z "$container_id" ]] && [[ $1 = "local" ]]; then
+if [ -z "$container_id" ] && [ $1 = "local" ]; then
 	echo "Creating container from image ${docker_image}"
 	docker run -d -P -v ${h_folder_code}:${d_folder_code} -t ${docker_image}
 	container_id=$(docker ps -qf "ancestor=${docker_image}")
 
-elif [[ -z "$container_id" ]]
+elif [ $1 = "deploy" ]
 then 
+	echo "Found container: ${container_id}"
+	docker kill ${container_id}
+
 	echo "Creating container from image ${docker_image}"
-	docker run -d -p 80:5000 -t ${docker_image}
+	docker run -d -p 80:5000 -v ${h_folder_code}:${d_folder_code} -t ${docker_image}
 	container_id=$(docker ps -qf "ancestor=${docker_image}")
 
 else

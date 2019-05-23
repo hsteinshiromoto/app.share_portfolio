@@ -88,7 +88,7 @@ deploy_container:
   only:
     - dev
     - master
-    - bugfix/deploy
+    - release/improve_deploy
   image: docker:stable
   # Start service to have access to Docker binaries
   services:
@@ -112,6 +112,7 @@ deploy_container:
     - ssh -o "StrictHostKeyChecking no" -i ~/.ssh/key.pem -t -t $HOST_USER@$HOST_ADDRESS 'sudo usermod -aG docker $USER'
     - ssh -o "StrictHostKeyChecking no" -i ~/.ssh/key.pem -t -t $HOST_USER@$HOST_ADDRESS 'sudo setfacl -m user:$USER:rw /var/run/docker.sock'
     - scp -i ~/.ssh/key.pem ${PWD}/run_scheduler.sh $HOST_USER@$HOST_ADDRESS:~
+    - scp -i ~/.ssh/key.pem ${PWD}/run_container.sh $HOST_USER@$HOST_ADDRESS:~
 
   script:
     # - scp -i ~/.ssh/key.pem ~/.bashrc $HOST_USER@$HOST_ADDRESS:~
@@ -123,5 +124,6 @@ deploy_container:
     
     # - scp -i ~/.ssh/key.pem ${PWD}/run_container.sh $HOST_USER@$HOST_ADDRESS:~
     # - ssh -i ~/.ssh/key.pem $HOST_USER@$HOST_ADDRESS -t -t "sh run_container.sh"
-    - ssh -i ~/.ssh/key.pem $HOST_USER@$HOST_ADDRESS -t -t "docker run -d -p 80:5000 -t $image_name"
+    # - ssh -i ~/.ssh/key.pem $HOST_USER@$HOST_ADDRESS -t -t "docker run -d -p 80:5000 -t $image_name"
+    - ssh -i ~/.ssh/key.pem $HOST_USER@$HOST_ADDRESS -t -t "sh run_container.sh deploy"
     - ssh -i ~/.ssh/key.pem $HOST_USER@$HOST_ADDRESS -t -t "sh run_scheduler.sh"
