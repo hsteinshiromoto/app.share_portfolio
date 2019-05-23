@@ -33,7 +33,7 @@ then
 	docker kill ${container_id}
 
 	echo "Creating container from image ${docker_image}"
-	docker run -d -p 80:5000 -v ${h_folder_code}:${d_folder_code} -t ${docker_image}
+	docker run -d -p 80:5000 -t ${docker_image}
 	container_id=$(docker ps -qf "ancestor=${docker_image}")
 
 else
