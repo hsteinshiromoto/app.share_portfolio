@@ -1,5 +1,12 @@
-pandas_datareader
+requests<2.20 #It must be smaller than 2.20 for fix_yahoo_finance
+jupyter
+jupyter_contrib_nbextensions
 pandas
 scipy
-matplotlib
+pandas_datareader
 seaborn
+bokeh
+flask
+gitpython
+fix_yahoo_finance
+matplotlib
