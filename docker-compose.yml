@@ -1,0 +1,27 @@
+version: '3'
+services:
+  app:
+    env_file: .env
+    image: ${REGISTRY}/${REGISTRY_USER}/${REPO_NAME}:${TAG}
+    build: 
+      context: .
+      args:
+        - BUILD_DATE=${BUILD_DATE}
+        - REPO_NAME=${REPO_NAME}
+        - DOCKER_IMAGE=${REGISTRY}/${REGISTRY_USER}/${REPO_NAME}:${TAG}
+        - REGISTRY=${REGISTRY}
+        - FILES=${FILES}
+    ports:
+      - "5000:5000"
+    volumes:
+      - ${HOST_PROJECT_ROOT}
+
+  jupyter:
+    image: "jupyter/minimal-notebook:latest"
+    ports:
+      - "8888:8888"
+    volumes:
+      - ${HOST_PROJECT_ROOT}:/work
+    
+# volumes:
+#     - $(echo pwd)
