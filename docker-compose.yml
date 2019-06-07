@@ -14,7 +14,7 @@ services:
     ports:
       - "5000:5000"
     volumes:
-      - ${HOST_PROJECT_ROOT}
+      - /Users/humberto/Projects/app.share_portfolio:/home/app.share_portfolio
 
   jupyter:
     image: "jupyter/minimal-notebook:latest"
