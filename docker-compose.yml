@@ -4,6 +4,7 @@ services:
     env_file: .env
     image: ${REGISTRY}/${REGISTRY_USER}/${REPO_NAME}:${TAG}
     build: 
+      dockerfile: other.dockerfile
       context: .
       args:
         - BUILD_DATE=${BUILD_DATE}
@@ -21,7 +22,7 @@ services:
     ports:
       - "8888:8888"
     volumes:
-      - ${HOST_PROJECT_ROOT}:/work
+      - /Users/humberto/Projects/app.share_portfolio:/home/jovyan/work
     
 # volumes:
 #     - $(echo pwd)
