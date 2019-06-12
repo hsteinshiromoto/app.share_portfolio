@@ -15,14 +15,11 @@ services:
     ports:
       - "5000:5000"
     volumes:
-      - /Users/humberto/Projects/app.share_portfolio:/home/app.share_portfolio
+      - ${HOST_PROJECT_ROOT}:/home/app.share_portfolio
 
   jupyter:
     image: "jupyter/minimal-notebook:latest"
     ports:
       - "8888:8888"
     volumes:
-      - /Users/humberto/Projects/app.share_portfolio:/home/jovyan/work
-    
-# volumes:
-#     - $(echo pwd)
+      - ${HOST_PROJECT_ROOT}:/home/jovyan/work
