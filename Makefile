@@ -42,6 +42,15 @@ build:
 		   --build-arg FILES=. \
 		   -t $(docker_image) .
 
+## Compose containers
+buildcompose:
+	@echo "Composing containers"
+	docker-compose build --build-arg BUILD_DATE=$(build_date) \
+		   --build-arg REPO_NAME=$(repo_name) \
+		   --build-arg DOCKER_IMAGE=$(docker_image) \
+		   --build-arg REGISTRY=$(registry) \
+		   --build-arg FILES=. app
+
 ## Delete all compiled Python files
 clean:
 	find . -type f -name "*.py[co]" -delete

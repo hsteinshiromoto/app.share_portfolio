@@ -1,0 +1,24 @@
+version: '3'
+services:
+  app:
+    env_file: .env
+    image: ${REGISTRY}/${REGISTRY_USER}/${REPO_NAME}:${TAG}
+    build: 
+      context: .
+      args:
+        - BUILD_DATE=${BUILD_DATE}
+        - REPO_NAME=${REPO_NAME}
+        - DOCKER_IMAGE=${REGISTRY}/${REGISTRY_USER}/${REPO_NAME}:${TAG}
+        - REGISTRY=${REGISTRY}
+        - FILES=${FILES}
+    ports:
+      - 5000:5000
+    volumes:
+      - ${HOST_PROJECT_ROOT}:/home/app.share_portfolio
+
+  jupyter:
+    image: ${REGISTRY}/${REGISTRY_USER}/configs/docker.datascience
+    ports:
+      - ${HOST_PORT_JUPYTER}:8888
+    volumes:
+      - ${HOST_PROJECT_ROOT}:/home/jovyan/work
