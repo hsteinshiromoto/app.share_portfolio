@@ -1,4 +1,4 @@
-requests<2.20 #It must be smaller than 2.20 for fix_yahoo_finance
+requests<2.20 #It must be smaller than 2.20 for finance
 jupyter
 jupyter_contrib_nbextensions
 pandas
@@ -8,5 +8,6 @@ seaborn
 bokeh
 flask
 gitpython
-fix_yahoo_finance
+yfinance
+finance
 matplotlib

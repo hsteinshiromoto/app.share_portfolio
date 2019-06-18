@@ -1,7 +1,7 @@
 import pandas as pd
 import os
 import warnings
-import fix_yahoo_finance as yf
+import yfinance as yf
 yf.pdr_override()
 
 from datetime import datetime
