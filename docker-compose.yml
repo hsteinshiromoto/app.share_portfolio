@@ -4,7 +4,6 @@ services:
     env_file: .env
     image: ${REGISTRY}/${REGISTRY_USER}/${REPO_NAME}:${TAG}
     build: 
-      dockerfile: other.dockerfile
       context: .
       args:
         - BUILD_DATE=${BUILD_DATE}
@@ -13,13 +12,13 @@ services:
         - REGISTRY=${REGISTRY}
         - FILES=${FILES}
     ports:
-      - "5000:5000"
+      - 5000:5000
     volumes:
       - ${HOST_PROJECT_ROOT}:/home/app.share_portfolio
 
   jupyter:
-    image: "jupyter/minimal-notebook:latest"
+    image: ${REGISTRY}/${REGISTRY_USER}/configs/docker.datascience
     ports:
-      - "8888:8888"
+      - ${HOST_PORT_JUPYTER}:8888
     volumes:
       - ${HOST_PROJECT_ROOT}:/home/jovyan/work
