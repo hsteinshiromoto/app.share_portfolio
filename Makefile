@@ -10,7 +10,7 @@ tag = latest
 
 registry=registry.gitlab.com
 
-docker_image=$(registry)/$(user_name)/$(repo_name):$(tag)
+docker_image=${registry}/${user_name}/${repo_name}:${tag}
 
 build_date=$(shell date +%Y%m%d-%H:%M:%S)
 
@@ -21,6 +21,15 @@ build_date=$(shell date +%Y%m%d-%H:%M:%S)
 # ---
 # Commands
 # ---
+
+###
+buildapp:
+	docker build  \
+	  	   --build-arg BASE_IMAGE=3.7-slim-stretch \
+	  	   --build-arg FILES=. \
+		   --build-arg REPO_NAME=${repo_name} \
+		   -f app/app.Dockerfile \
+		   -t ${registry}/${user_name}/${repo_name}_app:${tag} .
 
 ## Build container locally
 buildlocal:
