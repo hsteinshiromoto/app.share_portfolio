@@ -1,6 +1,21 @@
 version: '3'
 services:
   app:
+    image: ${REGISTRY}/${REGISTRY_USER}/${REPO_NAME}_app:${TAG}
+    # build: 
+    #   context: app/
+      # args:
+      #   - BUILD_DATE=${BUILD_DATE}
+      #   - REPO_NAME=${REPO_NAME}
+      #   - DOCKER_IMAGE=${REGISTRY}/${REGISTRY_USER}/${REPO_NAME}:${TAG}
+      #   - REGISTRY=${REGISTRY}
+      #   - FILES=${FILES}
+    ports:
+      - 5000:5000
+    volumes:
+      - ${HOST_PROJECT_ROOT}:/home/app.share_portfolio
+
+  all:
     env_file: .env
     image: ${REGISTRY}/${REGISTRY_USER}/${REPO_NAME}:${TAG}
     build: 
@@ -11,8 +26,8 @@ services:
         - DOCKER_IMAGE=${REGISTRY}/${REGISTRY_USER}/${REPO_NAME}:${TAG}
         - REGISTRY=${REGISTRY}
         - FILES=${FILES}
-    ports:
-      - 5000:5000
+    # ports:
+    #   - 5000:5000
     volumes:
       - ${HOST_PROJECT_ROOT}:/home/app.share_portfolio
 
