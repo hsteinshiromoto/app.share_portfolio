@@ -3,12 +3,10 @@ jupyter
 jupyter_contrib_nbextensions
 pandas
 scipy
-pandas_datareader
 seaborn
 bokeh
 flask
 gitpython
-yfinance
 finance
 matplotlib
 
@@ -16,3 +14,5 @@ matplotlib
 
 alpha_vantage # src: https://github.com/RomelTorres/alpha_vantage
 pyasx # src: https://github.com/zacscott/pyasx
+yfinance
+pandas_datareader
