@@ -40,7 +40,7 @@ RUN mkdir -p $PROJECT_ROOT
 # ---
 # Set up the necessary Python packages
 # ---
-COPY $FILES $PROJECT_ROOT
+COPY $FILES $PROJECT_ROOT/
 RUN pip install --upgrade pip && pip install -r $PROJECT_ROOT/requirements.txt
 
 # ---
