@@ -22,10 +22,6 @@ ifndef FILES
 FILES="requirements.txt"
 endif
 
-ifndef DOCKER_PARENT_IMAGE
-DOCKER_PARENT_IMAGE=python:3.7-slim-stretch
-endif
-
 ifndef DOCKER_TAG
 DOCKER_TAG=latest
 endif
@@ -72,7 +68,6 @@ build:
 	@echo "Building docker image ${DOCKER_IMAGE_TAG}"
 	docker build --build-arg BUILD_DATE=$(BUILD_DATE) \
 		   --build-arg PROJECT_NAME=${PROJECT_NAME} \
-		   --build-arg DOCKER_PARENT_IMAGE=${DOCKER_PARENT_IMAGE} \
 		   -t ${DOCKER_IMAGE_TAG} .
 
 ###
