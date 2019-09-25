@@ -1,7 +1,56 @@
+.PHONY: clean data lint requirements sync_data_to_s3 sync_data_from_s3
+
 # ---
-# Define Variables
+# Export environ variables defined in .env file:
 # ---
 
+include .env
+export $(shell sed 's/=.*//' .env)
+
+# Check if variable is set in .env
+ifndef REGISTRY_USER
+$(error REGISTRY_USER is not set)
+endif
+
+# ---
+# Arguments
+# ---
+
+# Files to be copied in build phase of the container
+ifndef FILES
+FILES="requirements.txt"
+endif
+
+ifndef DOCKER_PARENT_IMAGE
+DOCKER_PARENT_IMAGE=python:3.7-slim-stretch
+endif
+
+ifndef DOCKER_TAG
+DOCKER_TAG=latest
+endif
+
+ifndef DOCKER_REGISTRY
+DOCKER_REGISTRY=registry.gitlab.com/${REGISTRY_USER}
+endif
+
+ifndef DOCKER_REGISTRY
+USER=user
+endif
+
+# ---
+# Global Variables
+# ---
+
+PROJECT_PATH := $(shell dirname $(realpath $(lastword $(MAKEFILE_LIST))))
+PROJECT_NAME = $(shell basename ${PROJECT_PATH})
+DOCKER_IMAGE = ${DOCKER_REGISTRY}/${PROJECT_NAME}
+
+BUILD_DATE = $(shell date +%Y%m%d-%H:%M:%S)
+
+BUCKET = ${PROJECT_NAME}
+PROFILE = default
+
+# Todo: Continue from here
 # Define container image
 user_name=hsteinshiromoto
 repo_path=$(shell git rev-parse --show-toplevel)
