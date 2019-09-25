@@ -34,10 +34,6 @@ ifndef DOCKER_REGISTRY
 DOCKER_REGISTRY=registry.gitlab.com/${REGISTRY_USER}
 endif
 
-ifndef DOCKER_REGISTRY
-USER=user
-endif
-
 # ---
 # Global Variables
 # ---
@@ -47,9 +43,6 @@ PROJECT_NAME = $(shell basename ${PROJECT_PATH})
 DOCKER_IMAGE = ${DOCKER_REGISTRY}/${PROJECT_NAME}
 
 BUILD_DATE = $(shell date +%Y%m%d-%H:%M:%S)
-
-BUCKET = ${PROJECT_NAME}
-PROFILE = default
 
 # Todo: Continue from here
 # Define container image
@@ -78,13 +71,10 @@ build:
 
 	@echo "Building docker image ${DOCKER_IMAGE_TAG}"
 	docker build --build-arg BUILD_DATE=$(BUILD_DATE) \
-		   --build-arg BUCKET=${BUCKET} \
-		   --build-arg PROFILE_S3=${PROFILE_S3} \
 		   --build-arg PROJECT_NAME=${PROJECT_NAME} \
-		   --build-arg DOCKER_IMAGE_TAG=${DOCKER_IMAGE}:${DOCKER_TAG} \
+		   --build-arg DOCKER_IMAGE_TAG=${DOCKER_IMAGE_TAG} \
 		   --build-arg DOCKER_PARENT_IMAGE=${DOCKER_PARENT_IMAGE} \
 		   --build-arg DOCKER_REGISTRY=${DOCKER_REGISTRY} \
-		   --build-arg USER=${USER} \
 		   -t ${DOCKER_IMAGE_TAG} .
 
 ###
