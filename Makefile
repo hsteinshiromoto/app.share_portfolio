@@ -72,9 +72,7 @@ build:
 	@echo "Building docker image ${DOCKER_IMAGE_TAG}"
 	docker build --build-arg BUILD_DATE=$(BUILD_DATE) \
 		   --build-arg PROJECT_NAME=${PROJECT_NAME} \
-		   --build-arg DOCKER_IMAGE_TAG=${DOCKER_IMAGE_TAG} \
 		   --build-arg DOCKER_PARENT_IMAGE=${DOCKER_PARENT_IMAGE} \
-		   --build-arg DOCKER_REGISTRY=${DOCKER_REGISTRY} \
 		   -t ${DOCKER_IMAGE_TAG} .
 
 ###

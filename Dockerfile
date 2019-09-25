@@ -1,12 +1,12 @@
-FROM python:3.7-slim-stretch
+ARG DOCKER_PARENT_IMAGE
+FROM $DOCKER_PARENT_IMAGE
 
 # --- 
 # Build arguments
 # ---
 ARG BUILD_DATE
-ARG REPO_NAME
+ARG PROJECT_NAME
 ARG DOCKER_IMAGE
-ARG REGISTRY
 ARG FILES
 
 # Silence debconf
@@ -18,10 +18,8 @@ ARG DEBIAN_FRONTEND=noninteractive
 ENV LANG=C.UTF-8 \
     LC_ALL=C.UTF-8
 ENV TINI_VERSION v0.6.0
-ENV PROJECT_ROOT /home/$REPO_NAME
+ENV PROJECT_ROOT /home/$PROJECT_NAME
 ENV PYTHONPATH $PROJECT_ROOT
-ENV DOCKER_IMAGE $DOCKER_IMAGE
-ENV REGISTRY $REGISTRY
 
 ENV TZ=Australia/Sydney
 
@@ -76,8 +74,8 @@ COPY schedule $PROJECT_ROOT
 # Setup User
 # ---
 
-# RUN useradd --create-home -s /bin/bash $REPO_NAME
-# USER $REPO_NAME
+# RUN useradd --create-home -s /bin/bash $PROJECT_NAME
+# USER $PROJECT_NAME
 
 # ---
 # Setup container ports and start flask server
