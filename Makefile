@@ -61,6 +61,9 @@ build_date=$(shell date +%Y%m%d-%H:%M:%S)
 # Commands
 # ---
 
+test:
+	@echo "${FILES}"
+
 ## Build container locally
 build:
 	$(eval DOCKER_IMAGE_TAG=${DOCKER_IMAGE}:${DOCKER_TAG})

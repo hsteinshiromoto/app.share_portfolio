@@ -30,61 +30,37 @@ LABEL org.label-schema.build-date=$BUILD_DATE \
       maintainer="Dr Humberto STEIN SHIROMOTO <h.stein.shiromoto@gmail.com>"
 
 # ---
+# Copy Necessary Files
+# ---
+COPY debian-requirements.txt /usr/local/debian-requirements.txt
+COPY entrypoint.sh /usr/local/bin/entrypoint.sh
+COPY run_python.sh /usr/local/bin/run_python.sh
+COPY test_environment.py /usr/local/bin/test_environment.py
+COPY setup.py /usr/local/bin/setup.py
+COPY requirements.txt /usr/local/requirements.txt
+COPY $FILES $PROJECT_ROOT/
+
+RUN chmod +x /usr/local/bin/entrypoint.sh && \
+    chmod +x /usr/local/bin/run_python.sh && \
+	chmod +x /usr/local/bin/test_environment.py && \
+	chmod +x /usr/local/bin/setup.py
+
+# ---
 # Set up the necessary Debian packages
 # ---
-RUN apt update && apt install -y git procps cron sudo
-
-# Create the "home" folder 
-RUN mkdir -p $PROJECT_ROOT
+RUN apt-get update && \
+	DEBIAN_PACKAGES=$(egrep -v "^\s*(#|$)" /usr/local/debian-requirements.txt) && \
+    apt-get install -y $DEBIAN_PACKAGES && \
+    apt-get clean
 
 # ---
 # Set up the necessary Python packages
 # ---
-COPY $FILES $PROJECT_ROOT/
-RUN pip install --upgrade pip && pip install -r $PROJECT_ROOT/requirements.txt
+RUN bash /usr/local/bin/run_python.sh test_environment && \
+	bash /usr/local/bin/run_python.sh requirements
 
-# ---
-# Set up jupyter notebook extensions
-# ---
-RUN jupyter contrib nbextension install --system && \
-	jupyter nbextensions_configurator enable --system
-
-# ---
-# Add Tini. Tini operates as a process subreaper for jupyter. This prevents
-# kernel crashes.
-# ---
-
-ADD https://github.com/krallin/tini/releases/download/${TINI_VERSION}/tini /usr/bin/tini
-RUN chmod +x /usr/bin/tini
-ENTRYPOINT ["/usr/bin/tini", "--"]
-
-# ---
-# Schedule time run of Python script
-# ---
-
-# src: https://medium.com/@jonbaldie/how-to-run-cron-jobs-inside-docker-containers-26964315b582
-# src: https://stackoverflow.com/questions/49992618/best-practices-to-run-cron-job-from-a-docker-stack
-# src: https://stackoverflow.com/questions/55096382/how-to-run-cron-job-in-docker-container
-RUN service cron start
-RUN cron
-
-COPY schedule $PROJECT_ROOT
-
-# ---
-# Setup User
-# ---
-
-# RUN useradd --create-home -s /bin/bash $PROJECT_NAME
-# USER $PROJECT_NAME
-
-# ---
-# Setup container ports and start flask server
-# ---
-EXPOSE 8888
-
-# Expose Ports
-EXPOSE 5000
-
-CMD python3 ${PROJECT_ROOT}/app/app.py
-
+# Create the "home" folder 
+RUN mkdir -p $PROJECT_ROOT
 WORKDIR $PROJECT_ROOT
+
+ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
