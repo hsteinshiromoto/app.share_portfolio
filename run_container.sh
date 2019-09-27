@@ -1,9 +1,10 @@
 #!/bin/bash
 
 # ---
-# Documentation
+# Functions
 # ---
 
+# Documentation
 display_help() {
     echo "Usage: [variable=value] $0" >&2
     echo
@@ -14,11 +15,13 @@ display_help() {
     exit 1
 }
 
+# Start jupyter server
 jupyter() {
     echo "Starting Jupyter Notebook"
     DOCKER_TAG=jupyter
 }
 
+# Get container id
 get_container_id() {
     echo
     echo "Getting container id for image ${DOCKER_IMAGE_TAG} ..."
@@ -34,6 +37,7 @@ get_container_id() {
     fi
 }
 
+# Available options
 while :
 do
     case "$1" in
@@ -67,7 +71,6 @@ done
 # ---
 
 # Get Variables From make_variables.sh
-
 IFS='|| ' read -r -a array <<< $(./make_variables.sh)
 
 DOCKER_IMAGE=${array[0]}
