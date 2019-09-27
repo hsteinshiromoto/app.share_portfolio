@@ -47,13 +47,26 @@ BUILD_DATE = $(shell date +%Y%m%d-%H:%M:%S)
 test:
 	@echo "${FILES}"
 
-## Build container locally
-buildlocal:
+## Build Container
+build:
 	$(eval DOCKER_IMAGE_TAG=${DOCKER_IMAGE}:${DOCKER_TAG})
 
 	@echo "Building docker image ${DOCKER_IMAGE_TAG}"
-	docker build --build-arg BUILD_DATE=$(BUILD_DATE) \
+	docker build --build-arg BUILD_DATE=${BUILD_DATE} \
 		   		 --build-arg PROJECT_NAME=${PROJECT_NAME} \
+		   		 -t ${DOCKER_IMAGE_TAG} .
+
+## Build Jupyter Container
+build_jupyter:
+	$(eval DOCKER_PARENT_IMAGE=${DOCKER_IMAGE}:${DOCKER_TAG})
+	$(eval DOCKER_TAG=jupyter)
+	$(eval DOCKER_IMAGE_TAG=${DOCKER_IMAGE}:${DOCKER_TAG})
+
+	@echo "Building docker image ${DOCKER_IMAGE_TAG}"
+	docker build --build-arg DOCKER_PARENT_IMAGE=${DOCKER_PARENT_IMAGE} \
+				 --build-arg BUILD_DATE=${BUILD_DATE} \
+		   		 --build-arg PROJECT_NAME=${PROJECT_NAME} \
+		   		 -f jupyter/Dockerfile \
 		   		 -t ${DOCKER_IMAGE_TAG} .
 
 ###
