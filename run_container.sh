@@ -133,7 +133,7 @@ if [[ "${DOCKER_TAG}" == "jupyter" ]]; then
 
     echo "Getting Jupyter token ..."
     sleep 5
-    JUPYTER_TOKEN=$(docker exec -u $(id -u) -i ${CONTAINER_ID} sh -c "jupyter notebook list" | tac | grep -o "token=[a-z0-9]*" | sed -n 1p | cut -d "=" -f 2)
+    JUPYTER_TOKEN=$(docker exec -u $USER -i ${CONTAINER_ID} sh -c "jupyter notebook list" | tac | grep -o "token=[a-z0-9]*" | sed -n 1p | cut -d "=" -f 2)
     echo -e "Jupyter token: ${GREEN}${JUPYTER_TOKEN}${NC}"
 
     JUPYTER_ADDRESS=$(docker ps -f "ancestor=${DOCKER_IMAGE}" | grep -o "0.0.0.0:[0-9]*")
