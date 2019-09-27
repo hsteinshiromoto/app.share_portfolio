@@ -40,23 +40,6 @@ DOCKER_IMAGE = ${DOCKER_REGISTRY}/${PROJECT_NAME}
 
 BUILD_DATE = $(shell date +%Y%m%d-%H:%M:%S)
 
-# Todo: Continue from here
-# Define container image
-user_name=hsteinshiromoto
-repo_path=$(shell git rev-parse --show-toplevel)
-repo_name=$(shell basename $(repo_path))
-tag = latest
-
-registry=registry.gitlab.com
-
-docker_image=${registry}/${user_name}/${repo_name}:${tag}
-
-build_date=$(shell date +%Y%m%d-%H:%M:%S)
-
-# Set up env to be used in the container build phase
-#include .env
-#export $(shell sed 's/=.*//' .env)
-
 # ---
 # Commands
 # ---
@@ -65,7 +48,7 @@ test:
 	@echo "${FILES}"
 
 ## Build container locally
-build:
+buildlocal:
 	$(eval DOCKER_IMAGE_TAG=${DOCKER_IMAGE}:${DOCKER_TAG})
 
 	@echo "Building docker image ${DOCKER_IMAGE_TAG}"
@@ -83,14 +66,14 @@ buildapp:
 		   -t ${registry}/${user_name}/${repo_name}_app:${tag} app/
 
 ## Build container locally
-buildlocal:
-	@echo "Building docker image $(docker_image)"
-	docker build --build-arg BUILD_DATE=$(build_date) \
-		   --build-arg REPO_NAME=$(repo_name) \
-		   --build-arg DOCKER_IMAGE=$(docker_image) \
-		   --build-arg REGISTRY=$(registry) \
-		   --build-arg FILES="requirements.txt" \
-		   -t $(docker_image) .
+#buildlocal:
+#	@echo "Building docker image $(docker_image)"
+#	docker build --build-arg BUILD_DATE=$(build_date) \
+#		   --build-arg REPO_NAME=$(repo_name) \
+#		   --build-arg DOCKER_IMAGE=$(docker_image) \
+#		   --build-arg REGISTRY=$(registry) \
+#		   --build-arg FILES="requirements.txt" \
+#		   -t $(docker_image) .
 
 ### Build container
 #build:
