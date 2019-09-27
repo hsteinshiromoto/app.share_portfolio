@@ -32,7 +32,7 @@ get_container_id() {
         echo "No container id found"
 
     else
-        echo "Found id: ${bold}${CONTAINER_ID}${normal}"
+        echo "Container id: ${bold}${CONTAINER_ID}${normal}"
 
     fi
 }
@@ -94,7 +94,7 @@ get_container_id
 if [[ -z "${CONTAINER_ID}" ]]; then
 	echo "Creating Container from image ${DOCKER_IMAGE_TAG} ..."
 
-	docker run --env-file .env -e DOCKER_USER=$USER -e uid=$UID -it -P -v $(pwd):/home/${PROJECT_NAME} -t ${DOCKER_IMAGE_TAG} >/dev/null >&1
+	docker run --env-file .env -e DOCKER_USER=$USER -e uid=$UID -d -P -v $(pwd):/home/${PROJECT_NAME} -t ${DOCKER_IMAGE_TAG} >/dev/null >&1
 
 	echo "Done"
 
@@ -114,17 +114,22 @@ fi
 
 get_container_id
 
-# Need to change permissions on folder $user/.local/share/jupyter for user app.share_portfolio
-# before starting Jupyter server
-docker exec -u root -i ${container_id} sh -c "chown -R ${repo_name}:${repo_name} /home/${repo_name}/.local/share/jupyter"
-echo "Starting Jupyter server ..."
-docker exec -d -i ${container_id} sh -c "jupyter notebook --no-browser --ip=0.0.0.0 --port=8888"
-echo "Done"
-	
-port1=$(docker ps -f "ancestor=${docker_image}" | grep -o "0.0.0.0:[0-9]*->[0-9]*" | cut -d ":" -f 2 | head -n 1)
-port2=$(docker ps -f "ancestor=${docker_image}" | grep -o "0.0.0.0:[0-9]*->[0-9]*" | cut -d ":" -f 2 | sed -n 2p)
-token=$(docker exec -i ${container_id} sh -c "jupyter notebook list" | tac | grep -o "token=[a-z0-9]*" | sed -n 1p | cut -d "=" -f 2)
+if [[ "${DOCKER_TAG}" == "jupyter" ]]; then
+    JUPYTER_PORT=$(docker ps -f "ancestor=${DOCKER_IMAGE_TAG}" | grep -o "0.0.0.0:[0-9]*->8888" | cut -d ":" -f 2 | head -n 1)
 
-echo -e "Container ID: ${RED}${container_id}${NC}"
-echo -e "Port mappings: ${BLUE}${port1}, ${port2}${NC}"
-echo -e  "Jupyter token: ${GREEN}${token}${NC}"
+    echo -e "Port mapping: ${BLUE}${JUPYTER_PORT}${NC}"
+
+    echo "Getting Jupyter token ..."
+    sleep 5
+    JUPYTER_TOKEN=$(docker exec -u $(id -u) -i ${CONTAINER_ID} sh -c "jupyter notebook list" | tac | grep -o "token=[a-z0-9]*" | sed -n 1p | cut -d "=" -f 2)
+    echo -e "Jupyter token: ${GREEN}${JUPYTER_TOKEN}${NC}"
+
+    JUPYTER_ADDRESS=$(docker ps -f "ancestor=${DOCKER_IMAGE}" | grep -o "0.0.0.0:[0-9]*")
+    echo -e "Jupyter Address: ${BLUE}http://${JUPYTER_ADDRESS}/?token=${JUPYTER_TOKEN}${NC}"
+fi
+
+port2=$(docker ps -f "ancestor=${docker_image}" | grep -o "0.0.0.0:[0-9]*->[0-9]*" | cut -d ":" -f 2 | sed -n 2p)
+
+
+
+

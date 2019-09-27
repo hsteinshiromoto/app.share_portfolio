@@ -78,26 +78,6 @@ buildapp:
 		   -f app.Dockerfile \
 		   -t ${registry}/${user_name}/${repo_name}_app:${tag} app/
 
-## Build container locally
-#buildlocal:
-#	@echo "Building docker image $(docker_image)"
-#	docker build --build-arg BUILD_DATE=$(build_date) \
-#		   --build-arg REPO_NAME=$(repo_name) \
-#		   --build-arg DOCKER_IMAGE=$(docker_image) \
-#		   --build-arg REGISTRY=$(registry) \
-#		   --build-arg FILES="requirements.txt" \
-#		   -t $(docker_image) .
-
-### Build container
-#build:
-#	@echo "Building docker image $(docker_image)"
-#	docker build --build-arg BUILD_DATE=$(build_date) \
-#		   --build-arg REPO_NAME=$(repo_name) \
-#		   --build-arg DOCKER_IMAGE=$(docker_image) \
-#		   --build-arg REGISTRY=$(registry) \
-#		   --build-arg FILES=. \
-#		   -t $(docker_image) .
-
 ## Compose containers
 buildcompose:
 	@echo "Composing containers"
@@ -106,11 +86,6 @@ buildcompose:
 		   --build-arg DOCKER_IMAGE=$(docker_image) \
 		   --build-arg REGISTRY=$(registry) \
 		   --build-arg FILES=. app
-
-## Delete all compiled Python files
-clean:
-	find . -type f -name "*.py[co]" -delete
-	find . -type d -name "__pycache__" -delete
 
 # ---
 # Self Documenting Commands
