@@ -8,6 +8,7 @@
 display_help() {
     echo "Usage: [variable=value] $0" >&2
     echo
+    echo "   -d, --deploy               deploy container"
     echo "   -h, --help                 display help"
     echo "   -j, --jupyter_notebook     launch container with jupyter notebook"
     echo
@@ -37,6 +38,12 @@ get_container_id() {
     fi
 }
 
+# Get container id
+deploy_container() {
+    echo
+    echo "Deploying container ..."
+}
+
 # Available options
 while :
 do
@@ -48,6 +55,11 @@ do
 
       -j | --jupyter_notebook)
           jupyter  # Call your function
+          break
+          ;;
+
+      -d | --deploy)
+          deploy_container  # Call your function
           break
           ;;
 
