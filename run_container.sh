@@ -91,7 +91,7 @@ get_container_id
 if [[ -z "${CONTAINER_ID}" ]]; then
 	echo "Creating Container from image ${DOCKER_IMAGE_TAG} ..."
 
-	docker run -d -P -v $(pwd):/home/${PROJECT_NAME} -t ${DOCKER_IMAGE_TAG} >/dev/null >&1
+	docker run --env-file .env -e DOCKER_USER=$USER -e uid=$UID -it -P -v $(pwd):/home/${PROJECT_NAME} -t ${DOCKER_IMAGE_TAG} >/dev/null >&1
 
 	echo "Done"
 
