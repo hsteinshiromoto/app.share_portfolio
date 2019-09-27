@@ -5,8 +5,22 @@ set -e
 CURRENT_UID=${uid:-9999}
 DOCKER_USER=${DOCKER_USER:-docker_user}
 
-# Create user called "docker" with selected UID
-useradd --shell /bin/bash -u $CURRENT_UID -o -c "" -m $DOCKER_USER
+if [[ -z "$DOCKER_PASSWORD" ]]; then
+    echo "ERROR: DOCKER_PASSWORD is undefined"
+    exit 1
+
+else
+    # Create user called "docker" with selected UID
+    useradd --shell /bin/bash -p $(openssl passwd -1 $DOCKER_PASSWORD) -u $CURRENT_UID -o -c "" -m $DOCKER_USER
+
+fi
+
+
+if [[ "$1" == "ssh" ]]; then
+    apt-get install openssh-server
+    service ssh start
+
+fi
 
 # Execute process
 exec gosu $DOCKER_USER "$@"
