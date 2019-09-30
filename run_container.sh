@@ -33,14 +33,13 @@ jupyter() {
     JUPYTER_TOKEN=$(docker exec -u $USER -i ${CONTAINER_ID} sh -c "jupyter notebook list" | tac | grep -o "token=[a-z0-9]*" | sed -n 1p | cut -d "=" -f 2)
     echo -e "Jupyter token: ${GREEN}${JUPYTER_TOKEN}${NC}"
 
-    JUPYTER_ADDRESS=$(docker ps -f "ancestor=${DOCKER_IMAGE}" | grep -o "0.0.0.0:[0-9]*")
+    JUPYTER_ADDRESS=$(docker ps -f "ancestor=${DOCKER_IMAGE_TAG}" | grep -o "0.0.0.0:[0-9]*")
     echo -e "Jupyter Address: ${BLUE}http://${JUPYTER_ADDRESS}/?token=${JUPYTER_TOKEN}${NC}"
 
 }
 
 # Get container id
 get_container_id() {
-    echo
     echo "Getting container id for image ${DOCKER_IMAGE_TAG} ..."
 
     CONTAINER_ID=$(docker ps | grep "${DOCKER_IMAGE_TAG}" | awk '{ print $1}')
