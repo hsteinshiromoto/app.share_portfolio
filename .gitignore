@@ -3,6 +3,12 @@
 # Edit at https://www.gitignore.io/?templates=macos,latex,pycharm,sublimetext,jupyternotebook
 
 *.env
+.ash_history
+.gitattributes
+.python_history
+.selected_editor
+.viminfo
+
 
 src/__pycache__/*
 src/data/__pycache__/*
