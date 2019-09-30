@@ -1,6 +1,4 @@
 requests<2.20 #It must be smaller than 2.20 for finance
-jupyter
-jupyter_contrib_nbextensions
 pandas
 scipy
 seaborn

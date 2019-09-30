@@ -1,26 +1,73 @@
+SHELL:=/bin/bash
+.PHONY: clean data lint requirements sync_data_to_s3 sync_data_from_s3
+
 # ---
-# Define Variables
+# Export environ variables defined in .env file:
 # ---
 
-# Define container image
-user_name=hsteinshiromoto
-repo_path=$(shell git rev-parse --show-toplevel)
-repo_name=$(shell basename $(repo_path))
-tag = latest
+include .env
+export $(shell sed 's/=.*//' .env)
 
-registry=registry.gitlab.com
+# Check if variable is set in .env
+ifndef REGISTRY_USER
+$(error REGISTRY_USER is not set)
+endif
 
-docker_image=${registry}/${user_name}/${repo_name}:${tag}
+# ---
+# Arguments
+# ---
 
-build_date=$(shell date +%Y%m%d-%H:%M:%S)
+# Files to be copied in build phase of the container
+ifndef FILES
+FILES="requirements.txt"
+endif
 
-# Set up env to be used in the container build phase
-#include .env
-#export $(shell sed 's/=.*//' .env)
+ifndef DOCKER_TAG
+DOCKER_TAG=latest
+endif
+
+ifndef DOCKER_REGISTRY
+DOCKER_REGISTRY=registry.gitlab.com/${REGISTRY_USER}
+endif
+
+# ---
+# Global Variables
+# ---
+
+PROJECT_PATH := $(shell dirname $(realpath $(lastword $(MAKEFILE_LIST))))
+PROJECT_NAME = $(shell basename ${PROJECT_PATH})
+DOCKER_IMAGE = ${DOCKER_REGISTRY}/${PROJECT_NAME}
+
+BUILD_DATE = $(shell date +%Y%m%d-%H:%M:%S)
 
 # ---
 # Commands
 # ---
+
+test:
+	@echo "${FILES}"
+
+## Build Container
+build:
+	$(eval DOCKER_IMAGE_TAG=${DOCKER_IMAGE}:${DOCKER_TAG})
+
+	@echo "Building docker image ${DOCKER_IMAGE_TAG}"
+	docker build --build-arg BUILD_DATE=${BUILD_DATE} \
+		   		 --build-arg PROJECT_NAME=${PROJECT_NAME} \
+		   		 -t ${DOCKER_IMAGE_TAG} .
+
+## Build Jupyter Container
+build_jupyter:
+	$(eval DOCKER_PARENT_IMAGE=${DOCKER_IMAGE}:${DOCKER_TAG})
+	$(eval DOCKER_TAG=jupyter)
+	$(eval DOCKER_IMAGE_TAG=${DOCKER_IMAGE}:${DOCKER_TAG})
+
+	@echo "Building docker image ${DOCKER_IMAGE_TAG}"
+	docker build --build-arg DOCKER_PARENT_IMAGE=${DOCKER_PARENT_IMAGE} \
+				 --build-arg BUILD_DATE=${BUILD_DATE} \
+		   		 --build-arg PROJECT_NAME=${PROJECT_NAME} \
+		   		 -f jupyter/Dockerfile \
+		   		 -t ${DOCKER_IMAGE_TAG} .
 
 ###
 buildapp:
@@ -31,26 +78,6 @@ buildapp:
 		   -f app.Dockerfile \
 		   -t ${registry}/${user_name}/${repo_name}_app:${tag} app/
 
-## Build container locally
-buildlocal:
-	@echo "Building docker image $(docker_image)"
-	docker build --build-arg BUILD_DATE=$(build_date) \
-		   --build-arg REPO_NAME=$(repo_name) \
-		   --build-arg DOCKER_IMAGE=$(docker_image) \
-		   --build-arg REGISTRY=$(registry) \
-		   --build-arg FILES="requirements.txt" \
-		   -t $(docker_image) .
-
-## Build container
-build:
-	@echo "Building docker image $(docker_image)"
-	docker build --build-arg BUILD_DATE=$(build_date) \
-		   --build-arg REPO_NAME=$(repo_name) \
-		   --build-arg DOCKER_IMAGE=$(docker_image) \
-		   --build-arg REGISTRY=$(registry) \
-		   --build-arg FILES=. \
-		   -t $(docker_image) .
-
 ## Compose containers
 buildcompose:
 	@echo "Composing containers"
@@ -59,11 +86,6 @@ buildcompose:
 		   --build-arg DOCKER_IMAGE=$(docker_image) \
 		   --build-arg REGISTRY=$(registry) \
 		   --build-arg FILES=. app
-
-## Delete all compiled Python files
-clean:
-	find . -type f -name "*.py[co]" -delete
-	find . -type d -name "__pycache__" -delete
 
 # ---
 # Self Documenting Commands
