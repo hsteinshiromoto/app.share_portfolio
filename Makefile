@@ -57,7 +57,7 @@ build:
 		   		 -t ${DOCKER_IMAGE_TAG} .
 
 ## Build Jupyter Container
-build_jupyter:
+build_jupyter: build
 	$(eval DOCKER_PARENT_IMAGE=${DOCKER_IMAGE}:${DOCKER_TAG})
 	$(eval DOCKER_TAG=jupyter)
 	$(eval DOCKER_IMAGE_TAG=${DOCKER_IMAGE}:${DOCKER_TAG})
