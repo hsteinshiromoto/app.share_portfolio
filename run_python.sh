@@ -11,9 +11,7 @@ if [[ $1 = "requirements" ]]; then
  	echo ">>> Installing Required Modules .."
  	cd /usr/local/bin/
 	python -m pip install -U pip setuptools wheel
-	python -m pip install -r /usr/local/bin/requirements.txt
-	python -m spacy download en_core_web_sm # Install English language package for spaCy
-#	jupyter contrib nbextension install --system
+	python -m pip install -r /usr/local/requirements.txt
 	echo ">>> Done!"
 fi
 
