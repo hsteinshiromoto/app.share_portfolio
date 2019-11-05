@@ -81,10 +81,24 @@ deploy_container() {
 
 make_variables() {
     # Get Variables From make_variables.sh
-    IFS='|| ' read -r -a array <<< $(./make_variables.sh)
+    # IFS='|| ' read -r -a array <<< $(./make_variables.sh)
 
-    DOCKER_IMAGE=${array[0]}
-    PROJECT_NAME=${array[1]}
+    set -a # automatically export all variables
+    source .env
+    set +a
+
+    # Check if variable is defined in .env file
+    if [[ -z ${REGISTRY_USER} ]]; then
+      echo "Error! Variable REGISTRY_USER is not defined" 1>&2
+      exit 1
+
+    fi
+
+    PROJECT_DIR=$(pwd)
+    PROJECT_NAME=$(basename ${PROJECT_DIR})
+
+    REGISTRY=registry.gitlab.com/${REGISTRY_USER}
+    DOCKER_IMAGE=${REGISTRY}/${PROJECT_NAME}
     DOCKER_IMAGE_TAG=${DOCKER_IMAGE}:${DOCKER_TAG}
 
     RED="\033[1;31m"
