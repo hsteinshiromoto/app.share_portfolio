@@ -20,20 +20,40 @@ display_help() {
 jupyter() {
     echo "Starting Jupyter Notebook"
     make_variables
-    DOCKER_TAG=jupyter
-    run_container
+
+    DOCKER_IMAGE=jupyter/scipy-notebook
+    DOCKER_USER=jovyan
+    
+    docker tag ${DOCKER_IMAGE} ${DOCKER_IMAGE}:${PROJECT_NAME}
+    
+    DOCKER_IMAGE_TAG=${DOCKER_IMAGE}:${PROJECT_NAME}
+
     get_container_id
 
-	JUPYTER_PORT=$(docker ps -f "ancestor=${DOCKER_IMAGE_TAG}" | grep -o "0.0.0.0:[0-9]*->8888" | cut -d ":" -f 2 | head -n 1)
+    if [[ -z "${CONTAINER_ID}" ]]; then
+      echo "Creating Container from image ${DOCKER_IMAGE_TAG} ..."
+      docker run -d -P -v $(pwd):/home/${DOCKER_USER}/work -t ${DOCKER_IMAGE_TAG} $1 >/dev/null >&1
+      get_container_id
+
+      echo "Installing requirements"
+
+      docker exec -u root -i ${CONTAINER_ID} /bin/bash -c "cp /home/${DOCKER_USER}/work/requirements.txt /usr/local/requirements.txt && bash /home/${DOCKER_USER}/work/run_python.sh -r"
+
+      sleep 5
+
+    else
+      echo "Container already running"
+
+    fi
+
+	  JUPYTER_PORT=$(docker ps -f "ancestor=${DOCKER_IMAGE_TAG}" | grep -o "0.0.0.0:[0-9]*->8888" | cut -d ":" -f 2 | head -n 1)
 
     echo -e "Port mapping: ${BLUE}${JUPYTER_PORT}${NC}"
 
-    echo "Getting Jupyter token ..."
-    sleep 5
-    JUPYTER_TOKEN=$(docker exec -u $USER -i ${CONTAINER_ID} sh -c "jupyter notebook list" | tac | grep -o "token=[a-z0-9]*" | sed -n 1p | cut -d "=" -f 2)
+    JUPYTER_TOKEN=$(docker exec -u ${DOCKER_USER} -i ${CONTAINER_ID} sh -c "jupyter notebook list" | tac | grep -o "token=[a-z0-9]*" | sed -n 1p | cut -d "=" -f 2)
     echo -e "Jupyter token: ${GREEN}${JUPYTER_TOKEN}${NC}"
 
-    JUPYTER_ADDRESS=$(docker ps -f "ancestor=${DOCKER_IMAGE_TAG}" | grep -o "0.0.0.0:[0-9]*")
+    JUPYTER_ADDRESS=$(docker ps | grep ${DOCKER_IMAGE_TAG} | grep -o "0.0.0.0:[0-9]*")
     echo -e "Jupyter Address: ${BLUE}http://${JUPYTER_ADDRESS}/?token=${JUPYTER_TOKEN}${NC}"
 
 }
