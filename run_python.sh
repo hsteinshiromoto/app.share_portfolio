@@ -1,19 +1,19 @@
 #!/bin/bash
 
 ## Test python environment is setup correctly
-if [[ $1 = "test_environment" ]]; then
-	echo ">>> Testing Python Environment"
-	/usr/local/bin/test_environment.py
-fi
+test_environment () {
+  echo ">>> Testing Python Environment"
+  /usr/local/bin/test_environment.py
+}
 
 ## Install Python Dependencies
-if [[ $1 = "requirements" ]]; then
- 	echo ">>> Installing Required Modules .."
- 	cd /usr/local/bin/
-	python -m pip install -U pip setuptools wheel
-	python -m pip install -r /usr/local/requirements.txt
-	echo ">>> Done!"
-fi
+requirements () {
+  echo ">>> Installing Required Modules .."
+  cd /usr/local/bin/
+  python -m pip install -U pip setuptools wheel
+  python -m pip install -r /usr/local/requirements.txt
+  echo ">>> Done!"
+}
 
 ## Make Dataset
 if [[ $1 == "data" ]]; then
@@ -46,7 +46,7 @@ display_help() {
 while :
 do
     case "$1" in
-      -h | --help)
+      -h | --help | "")
           display_help  # Call your function
           exit 0
           ;;
@@ -57,22 +57,17 @@ do
           ;;
 
       -m | --make_dataset)
-          jupyter  # Call your function
+          make_dataset  # Call your function
           break
           ;;
 
       -r | --requirements)
-          deploy_container  # Call your function
+          requirements  # Call your function
           break
           ;;
 
       -t | --test_environment)
-          run_ssh_container  # Call your function
-          break
-          ;;
-
-      "")
-          run_container  # Call your function
+          test_environment  # Call your function
           break
           ;;
 
