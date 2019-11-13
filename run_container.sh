@@ -99,6 +99,7 @@ make_variables() {
 
     REGISTRY=registry.gitlab.com/${REGISTRY_USER}
     DOCKER_IMAGE=${REGISTRY}/${PROJECT_NAME}
+    DOCKER_TAG=${DOCKER_TAG:-latest}
     DOCKER_IMAGE_TAG=${DOCKER_IMAGE}:${DOCKER_TAG}
 
     RED="\033[1;31m"
