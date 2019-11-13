@@ -149,19 +149,18 @@ def save_data(data, filename=None, path=None):
     return None
 
 
-def main(stocks, source="yahoo"):
+def main(portfolio):
     """
     Generates dataframe with price values of selected stocks
 
-    :param stocks: list
-    :param source: str., optinal
+    :param portfolio: list
     :return: pandas.dataframe
     """
 
     """
     Get stock prices 
     """
-    data = get_data(stocks, source)
+    data = get_data(portfolio, source)
 
     """
     Clean data
