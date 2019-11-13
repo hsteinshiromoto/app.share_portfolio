@@ -178,12 +178,9 @@ def main(portfolio):
 
 if __name__ == "__main__":
 
-    portfolio = ["WES", 'QBE']
+    share_code_list = ["WES", 'QBE', 'CUV', "AGL", "COH", "BHP", "CSL", "VAS",
+                       "WOW", "A2M", "MVF"]
+    shares_list = [share + ".AX" for share in share_code_list]
 
-    candidates = ['CUV', 'ALT', "AEF", "AGL", "COH", "BHP", "ALU", "ORG", "CSL",
-                  "VAS", "WOW", "A2M", "MVF"]
-
-    portfolio.extend(candidates)
-
-    main(portfolio)
+    main(shares_list)
 
