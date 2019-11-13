@@ -13,6 +13,6 @@ pytest
 # Data Sources:
 
 alpha_vantage # src: https://github.com/RomelTorres/alpha_vantage
-pyasx # src: https://github.com/zacscott/pyasx
-yfinance
-pandas_datareader
+#pyasx # src: https://github.com/zacscott/pyasx
+#yfinance
+#pandas_datareader
