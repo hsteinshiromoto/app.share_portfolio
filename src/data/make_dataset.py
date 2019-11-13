@@ -1,12 +1,24 @@
+# ---
+# Import
+# ---
+
+# Data Source Modules
+from alpha_vantage.timeseries import TimeSeries
+
+# Data Manipulation Modules
 import pandas as pd
+
+# Infrastructure Modules
 import os
 import warnings
-import yfinance as yf
-yf.pdr_override()
-
 from datetime import datetime
 
+# Scripts
 from src.base import get_paths, get_file
+
+# ---
+# Functions and classes
+# ---
 
 # Todo: Get real time quote:
 # src https://github.com/pydata/pandas-datareader/issues/44
