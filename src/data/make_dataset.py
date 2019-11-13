@@ -13,6 +13,7 @@ import os
 import warnings
 from pathlib import Path
 from datetime import datetime
+import time
 
 # Scripts
 from src.base import get_paths, get_file
@@ -29,41 +30,73 @@ PROJECT_ROOT = Path(__file__).resolve().parents[2]
 # Todo: Get real time quote:
 # src https://github.com/pydata/pandas-datareader/issues/44
 
-def get_data(stocks, source, metric="Close", start='2016-01-01', end=None):
+def get_data(portfolio: list, start_date: datetime=None,
+             end_date: datetime=None):
     """
     Get price values from source
 
-    :param stocks: list
-    :param metrics: str., optional
-    :param source: str., optional
-    :param start: str., optional
-    :param end: str., optional
+    :param portfolio:
+    :param start_date:
+    :param end_date:
     :return: pandas.DataFrame
     """
-    if source.lower() == "yahoo":
-        stocks = [item + ".AX" for item in stocks]
+
+    if os.getenv("ALPHAVANTAGE_API_KEY") is not None:
+        ts = TimeSeries(key=os.getenv("ALPHAVANTAGE_API_KEY"),
+                        output_format="pandas", indexing_type='date')
 
     else:
-        msg = "The source needs to be yahoo."
-        raise ValueError(msg)
+        raise EnvironmentError(f"Expected environment variable "
+                               f"ALPHAVANTAGE_API_KEY. Got "
+                               f"{type(os.getenv('ALPHAVANTAGE_API_KEY'))}.")
 
-    print("Loading data from {}.".format(source))
+    try:
+        if end_date < start_date:
+            msg = f"Expected start_date to be larger than end_date. " \
+                  f"Got end_date={end_date} < start_date={start_date}."
+            raise ValueError(msg)
 
-    if not end:
-        end = str(datetime.now().date())
+    except TypeError:
+        if (start_date == None) or (end_date == None):
+            pass
 
-    downloaded_data = yf.download(stocks, start=start, end=end)[metric]
+        else:
+            raise
 
-    columns = pd.MultiIndex.from_product([stocks, [metric]])
-    data = pd.DataFrame(columns=columns, index=downloaded_data.index)
+    for stock in portfolio:
 
-    for share in downloaded_data.columns:
-        data.loc[:, (share, metric)] = downloaded_data.loc[:, share].values
+        print(f"Getting stock {stock}")
 
-    data.dropna(how="all", inplace=True)
-    data.sort_index(ascending=True, inplace=True)
+        time_start = datetime.now()
+        data, meta_data = ts.get_daily(symbol=stock, outputsize='full')
+        data.reset_index(inplace=True)
+        data.rename(
+            columns={column: column[3:].capitalize() if column != "date"
+            else "Date" for column in data.columns.values},
+            inplace=True)
+        data["Symbol"] = stock
 
-    return data
+        try:
+            df = df.append(data)
+
+        except NameError:
+            df = data.copy()
+
+        time_diff = datetime.now() - time_start
+        if time_diff.seconds <= 60:
+            print(f"Waiting {60 - time_diff.seconds} seconds for next iteration "
+                  f"...")
+            time.sleep(60 - time_diff.seconds)
+
+    if start_date:
+        mask_start_date = df["Date"] >= start_date
+        df = df.loc[mask_start_date, :]
+
+    if end_date:
+        mask_end_date = df["Date"] <= end_date
+        df = df.loc[mask_end_date, :]
+
+    return df
 
 
 def input_data(data, missing_values_tolerance=5.0):
@@ -160,7 +193,7 @@ def main(portfolio):
     """
     Get stock prices 
     """
-    data = get_data(portfolio, source)
+    data = get_data(portfolio)
 
     """
     Clean data
