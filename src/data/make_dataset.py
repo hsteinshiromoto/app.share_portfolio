@@ -11,10 +11,16 @@ import pandas as pd
 # Infrastructure Modules
 import os
 import warnings
+from pathlib import Path
 from datetime import datetime
 
 # Scripts
 from src.base import get_paths, get_file
+
+# ---
+# Global Definitions
+# ---
+PROJECT_ROOT = Path(__file__).resolve().parents[2]
 
 # ---
 # Functions and classes
