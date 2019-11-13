@@ -8,7 +8,16 @@ from pathlib import Path
 import os
 import glob
 import re
+import yaml
 
+# ---
+# Global Definitions
+# ---
+PROJECT_ROOT = Path(__file__).resolve().parents[1]
+
+# ---
+# Functions and classes
+# ---
 def get_file(path: pathlib.PosixPath, pattern: str=None, extension: str=None,
              latest: bool=True):
     """
@@ -50,45 +59,16 @@ def get_file(path: pathlib.PosixPath, pattern: str=None, extension: str=None,
     return output
 
 
-def get_paths():
-    """
-    Generates the paths of a repository based on cookie cutter data science
+def get_config(path: pathlib.PosixPath=PROJECT_ROOT / "conf",
+               filename: str="config.yaml"):
 
-    :return: dict
-    """
+    with open(str(path / filename)) as config_file:
+        config = yaml.safe_load(config_file)
 
-    # Get repo name
-    git_repo = git.Repo(__file__, search_parent_directories=True)
-    repo = git_repo.git.rev_parse("--show-toplevel")
+    return config
 
-    paths = {"repo": repo, "base":{}, "src":{}, "data":{}, "app":{}}
-
-    for base_dir in ["data", "notebooks", "src", "model", "logs", "app"]:
-
-        paths["base"][base_dir] = os.path.join(repo, base_dir)
-        test = paths["base"][base_dir].split(base_dir)[-1]
-        assert len(test) == 0
-
-    for src_dir in ["conf", "data", "notebooks", "tests", "utils",
-                    "visualize", "conf", "model"]:
-
-        src_base_dir = paths.get("base").get("src")
-        paths["src"][src_dir] = os.path.join(src_base_dir, src_dir)
-        test = paths["src"][src_dir].split(src_dir)[-1]
-        assert len(test) == 0
-
-    for data_dir in ["raw", "interim", "processed"]:
-
-        data_base_dir = paths.get("base").get("data")
-        paths["data"][data_dir] = os.path.join(data_base_dir, data_dir)
-        test = paths["data"][data_dir].split(data_dir)[-1]
-        assert len(test) == 0
-
-    for app_dir in ["templates", "static"]:
-        app_base_dir = paths.get("base").get("app")
-        paths["app"][app_dir] = os.path.join(app_base_dir, app_dir)
-
-    return paths
 
 if __name__ == "__main__":
-    get_file(Path(__file__).resolve().parent, extension=".py", latest=True)
+    conf = get_config()
+
+    print("end")
