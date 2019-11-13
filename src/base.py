@@ -1,27 +1,33 @@
-import git #pip3 install gitpython
-import os
-import warnings
-import glob
+# ---
+# Import
+# ---
 
-def get_file(path, pattern=None, extension=None, latest=True):
+# Infrastructure Modules
+import pathlib
+from pathlib import Path
+import os
+import glob
+import re
+
+def get_file(path: pathlib.PosixPath, pattern: str=None, extension: str=None,
+             latest: bool=True):
     """
     Find (latest) files with a pattern
 
-    :param path: str
-    :param pattern: str., optional
-    :param extension .something: str., optionals
-    :param latest: bool., optional
+    :param path:
+    :param pattern:
+    :param extension:
+    :param latest:
     :return: str or list
     """
 
     if not extension:
         extension = ""
 
-    list_file_names = glob.glob("{0}/*{1}".format(path, extension))
+    list_file_names = glob.glob(f"{path}/*{extension}")
 
-    if list_file_names == []:
-        msg = "Expected files in {}. Found none.".format(path)
-        raise IOError(msg)
+    if not list_file_names:
+        return None
 
     elif pattern:
         list_pattern = [file_name for file_name in
@@ -29,10 +35,8 @@ def get_file(path, pattern=None, extension=None, latest=True):
 
         list_file_names = list_pattern
 
-        if list_file_names == []:
-            msg = "Expected files with pattern {0} in {1}. Found none."\
-                .format(pattern, path)
-            raise IOError(msg)
+        if not list_file_names:
+            list_file_names = None
 
     if latest == True:
         output = os.path.basename(max(list_file_names,
@@ -85,3 +89,6 @@ def get_paths():
         paths["app"][app_dir] = os.path.join(app_base_dir, app_dir)
 
     return paths
+
+if __name__ == "__main__":
+    get_file(Path(__file__).resolve().parent, extension=".py", latest=True)
