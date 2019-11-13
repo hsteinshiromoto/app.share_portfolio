@@ -56,8 +56,8 @@ RUN apt-get update && \
 # ---
 # Set up the necessary Python packages
 # ---
-RUN bash /usr/local/bin/run_python.sh test_environment && \
-	bash /usr/local/bin/run_python.sh requirements
+RUN bash /usr/local/bin/run_python.sh -t && \
+	bash /usr/local/bin/run_python.sh -r
 
 # Create the "home" folder 
 RUN mkdir -p $PROJECT_ROOT
