@@ -16,7 +16,7 @@ from datetime import datetime
 import time
 
 # Scripts
-from src.base import get_paths, get_file
+from src.base import get_file
 
 # ---
 # Global Definitions
@@ -159,27 +159,27 @@ def load_previous_dataset(filename=None, path=None):
     return data
 
 
-def save_data(data, filename=None, path=None):
-    """
-    Save pandas.dataframe to folder
-
-    :param data: pandas.DataFrame
-    :param filename: str., optional
-    :param path: str., optional
-    :return:
-    """
-
-    if not path:
-        paths = get_paths()
-        path = paths.get("data").get("interim")
-
-    if not filename:
-        filename = str(datetime.now().date()) + ".csv"
-
-    full_filename = os.path.join(path, filename)
-    data.to_csv(full_filename)
-
-    return None
+# def save_data(data, filename=None, path=None):
+#     """
+#     Save pandas.dataframe to folder
+#
+#     :param data: pandas.DataFrame
+#     :param filename: str., optional
+#     :param path: str., optional
+#     :return:
+#     """
+#
+#     if not path:
+#         paths = get_paths()
+#         path = paths.get("data").get("interim")
+#
+#     if not filename:
+#         filename = str(datetime.now().date()) + ".csv"
+#
+#     full_filename = os.path.join(path, filename)
+#     data.to_csv(full_filename)
+#
+#     return None
 
 
 def main(portfolio):
@@ -204,7 +204,7 @@ def main(portfolio):
     Return/save the data
     """
 
-    save_data(data, filename=None, path=None)
+    # save_data(data, filename=None, path=None)
 
     return data
 
