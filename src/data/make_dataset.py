@@ -14,6 +14,7 @@ import warnings
 from pathlib import Path
 from datetime import datetime
 import time
+from glob import glob
 
 # Scripts
 from src.base import get_file
@@ -22,7 +23,8 @@ from src.base import get_file
 # Global Definitions
 # ---
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
-
+PATH_DATA = PROJECT_ROOT / "data"
+PATH_DATA_RAW = PATH_DATA / "raw"
 # ---
 # Functions and classes
 # ---
@@ -159,27 +161,29 @@ def load_previous_dataset(filename=None, path=None):
     return data
 
 
-# def save_data(data, filename=None, path=None):
-#     """
-#     Save pandas.dataframe to folder
-#
-#     :param data: pandas.DataFrame
-#     :param filename: str., optional
-#     :param path: str., optional
-#     :return:
-#     """
-#
-#     if not path:
-#         paths = get_paths()
-#         path = paths.get("data").get("interim")
-#
-#     if not filename:
-#         filename = str(datetime.now().date()) + ".csv"
-#
-#     full_filename = os.path.join(path, filename)
-#     data.to_csv(full_filename)
-#
-#     return None
+def save_data(data: pd.DataFrame, filename: str=None,
+              path=PROJECT_ROOT / "data" / "raw",
+              replace_latest: bool=True):
+    """
+    Save pandas.dataframe to folder
+
+    :param data: pandas.DataFrame
+    :param filename: str., optional
+    :param path: str., optional
+    :return:
+    """
+
+    if replace_latest:
+        list_of_files = glob(str(path / "*.csv"))
+        filename = max(list_of_files, key=os.path.getctime)
+        filename = os.path.basename(filename)
+
+    elif filename:
+        filename = str(datetime.now().date()) + ".csv"
+
+    data.to_csv(str(path / filename), index=False)
+
+    return None
 
 
 def main(portfolio):
@@ -204,6 +208,8 @@ def main(portfolio):
     Return/save the data
     """
 
+    timestamp = str(datetime.now().date())
+    save_data(data)
     # save_data(data, filename=None, path=None)
 
     return data
@@ -213,6 +219,7 @@ if __name__ == "__main__":
 
     share_code_list = ["WES", 'QBE', 'CUV', "AGL", "COH", "BHP", "CSL", "VAS",
                        "WOW", "A2M", "MVF"]
+    share_code_list = ["IVV", "NDQ" , "VAP", "VAS", "CSL", "WES", "F100"]
     shares_list = [share + ".AX" for share in share_code_list]
 
     main(shares_list)
