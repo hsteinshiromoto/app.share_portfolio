@@ -10,6 +10,7 @@ matplotlib
 sqlalchemy
 psycopg2-binary # For postgres connection
 pytest
+mplfinance
 # Data Sources:
 
 alpha_vantage # src: https://github.com/RomelTorres/alpha_vantage

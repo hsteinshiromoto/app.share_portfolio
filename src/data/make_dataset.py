@@ -161,25 +161,22 @@ def load_previous_dataset(filename=None, path=None):
     return data
 
 
-def save_data(data: pd.DataFrame, filename: str=None,
-              path=PROJECT_ROOT / "data" / "raw",
-              replace_latest: bool=True):
+def save_data(data: pd.DataFrame, filename: str="raw.csv",
+              path=PATH_DATA_RAW, as_new_file: bool=False):
     """
-    Save pandas.dataframe to folder
+    Save data set
 
-    :param data: pandas.DataFrame
+    :param data: pd.DataFrame
     :param filename: str., optional
-    :param path: str., optional
-    :return:
+    :param path:
+    :param as_new_file: bool., optional
+    :return: None
     """
 
-    if replace_latest:
+    if not as_new_file:
         list_of_files = glob(str(path / "*.csv"))
         filename = max(list_of_files, key=os.path.getctime)
         filename = os.path.basename(filename)
-
-    elif filename:
-        filename = str(datetime.now().date()) + ".csv"
 
     data.to_csv(str(path / filename), index=False)
 
@@ -209,7 +206,7 @@ def main(portfolio):
     """
 
     timestamp = str(datetime.now().date())
-    save_data(data)
+    save_data(data, as_new_file=True)
     # save_data(data, filename=None, path=None)
 
     return data
