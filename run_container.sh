@@ -20,20 +20,40 @@ display_help() {
 jupyter() {
     echo "Starting Jupyter Notebook"
     make_variables
-    DOCKER_TAG=jupyter
-    run_container
+
+    DOCKER_IMAGE=jupyter/scipy-notebook
+    DOCKER_USER=jovyan
+    
+    docker tag ${DOCKER_IMAGE} ${DOCKER_IMAGE}:${PROJECT_NAME}
+    
+    DOCKER_IMAGE_TAG=${DOCKER_IMAGE}:${PROJECT_NAME}
+
     get_container_id
 
-	JUPYTER_PORT=$(docker ps -f "ancestor=${DOCKER_IMAGE_TAG}" | grep -o "0.0.0.0:[0-9]*->8888" | cut -d ":" -f 2 | head -n 1)
+    if [[ -z "${CONTAINER_ID}" ]]; then
+      echo "Creating Container from image ${DOCKER_IMAGE_TAG} ..."
+      docker run -d -P -v $(pwd):/home/${DOCKER_USER}/work -t ${DOCKER_IMAGE_TAG} $1 >/dev/null >&1
+      get_container_id
+
+      echo "Installing requirements"
+
+      docker exec -u root -i ${CONTAINER_ID} /bin/bash -c "cp /home/${DOCKER_USER}/work/requirements.txt /usr/local/requirements.txt && bash /home/${DOCKER_USER}/work/run_python.sh -r"
+
+      sleep 5
+
+    else
+      echo "Container already running"
+
+    fi
+
+	  JUPYTER_PORT=$(docker ps -f "ancestor=${DOCKER_IMAGE_TAG}" | grep -o "0.0.0.0:[0-9]*->8888" | cut -d ":" -f 2 | head -n 1)
 
     echo -e "Port mapping: ${BLUE}${JUPYTER_PORT}${NC}"
 
-    echo "Getting Jupyter token ..."
-    sleep 5
-    JUPYTER_TOKEN=$(docker exec -u $USER -i ${CONTAINER_ID} sh -c "jupyter notebook list" | tac | grep -o "token=[a-z0-9]*" | sed -n 1p | cut -d "=" -f 2)
+    JUPYTER_TOKEN=$(docker exec -u ${DOCKER_USER} -i ${CONTAINER_ID} sh -c "jupyter notebook list" | tac | grep -o "token=[a-z0-9]*" | sed -n 1p | cut -d "=" -f 2)
     echo -e "Jupyter token: ${GREEN}${JUPYTER_TOKEN}${NC}"
 
-    JUPYTER_ADDRESS=$(docker ps -f "ancestor=${DOCKER_IMAGE_TAG}" | grep -o "0.0.0.0:[0-9]*")
+    JUPYTER_ADDRESS=$(docker ps | grep ${DOCKER_IMAGE_TAG} | grep -o "0.0.0.0:[0-9]*")
     echo -e "Jupyter Address: ${BLUE}http://${JUPYTER_ADDRESS}/?token=${JUPYTER_TOKEN}${NC}"
 
 }
@@ -61,10 +81,25 @@ deploy_container() {
 
 make_variables() {
     # Get Variables From make_variables.sh
-    IFS='|| ' read -r -a array <<< $(./make_variables.sh)
+    # IFS='|| ' read -r -a array <<< $(./make_variables.sh)
 
-    DOCKER_IMAGE=${array[0]}
-    PROJECT_NAME=${array[1]}
+    set -a # automatically export all variables
+    source .env
+    set +a
+
+    # Check if variable is defined in .env file
+    if [[ -z ${REGISTRY_USER} ]]; then
+      echo "Error! Variable REGISTRY_USER is not defined" 1>&2
+      exit 1
+
+    fi
+
+    PROJECT_DIR=$(pwd)
+    PROJECT_NAME=$(basename ${PROJECT_DIR})
+
+    REGISTRY=registry.gitlab.com/${REGISTRY_USER}
+    DOCKER_IMAGE=${REGISTRY}/${PROJECT_NAME}
+    DOCKER_TAG=${DOCKER_TAG:-latest}
     DOCKER_IMAGE_TAG=${DOCKER_IMAGE}:${DOCKER_TAG}
 
     RED="\033[1;31m"
@@ -83,7 +118,7 @@ run_container() {
     if [[ -z "${CONTAINER_ID}" ]]; then
         echo "Creating Container from image ${DOCKER_IMAGE_TAG} ..."
 
-        docker run --env-file .env -e DOCKER_USER=$USER -e uid=$UID -d -P -v $(pwd):/home/${PROJECT_NAME} -t ${DOCKER_IMAGE_TAG} $1 >/dev/null >&1
+        docker run --rm --env-file .env -e DOCKER_USER=$USER -e uid=$UID -d -P -v $(pwd):/home/${PROJECT_NAME} -t ${DOCKER_IMAGE_TAG} $1 >/dev/null >&1
 
         echo "Done"
 

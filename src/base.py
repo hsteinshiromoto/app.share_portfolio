@@ -1,27 +1,42 @@
-import git #pip3 install gitpython
-import os
-import warnings
-import glob
+# ---
+# Import
+# ---
 
-def get_file(path, pattern=None, extension=None, latest=True):
+# Infrastructure Modules
+import pathlib
+from pathlib import Path
+import os
+import glob
+import re
+import yaml
+
+# ---
+# Global Definitions
+# ---
+PROJECT_ROOT = Path(__file__).resolve().parents[1]
+
+# ---
+# Functions and classes
+# ---
+def get_file(path: pathlib.PosixPath, pattern: str=None, extension: str=None,
+             latest: bool=True):
     """
     Find (latest) files with a pattern
 
-    :param path: str
-    :param pattern: str., optional
-    :param extension .something: str., optionals
-    :param latest: bool., optional
+    :param path:
+    :param pattern:
+    :param extension:
+    :param latest:
     :return: str or list
     """
 
     if not extension:
         extension = ""
 
-    list_file_names = glob.glob("{0}/*{1}".format(path, extension))
+    list_file_names = glob.glob(f"{path}/*{extension}")
 
-    if list_file_names == []:
-        msg = "Expected files in {}. Found none.".format(path)
-        raise IOError(msg)
+    if not list_file_names:
+        return None
 
     elif pattern:
         list_pattern = [file_name for file_name in
@@ -29,10 +44,8 @@ def get_file(path, pattern=None, extension=None, latest=True):
 
         list_file_names = list_pattern
 
-        if list_file_names == []:
-            msg = "Expected files with pattern {0} in {1}. Found none."\
-                .format(pattern, path)
-            raise IOError(msg)
+        if not list_file_names:
+            list_file_names = None
 
     if latest == True:
         output = os.path.basename(max(list_file_names,
@@ -46,42 +59,16 @@ def get_file(path, pattern=None, extension=None, latest=True):
     return output
 
 
-def get_paths():
-    """
-    Generates the paths of a repository based on cookie cutter data science
+def get_config(path: pathlib.PosixPath=PROJECT_ROOT / "conf",
+               filename: str="config.yaml"):
 
-    :return: dict
-    """
+    with open(str(path / filename)) as config_file:
+        config = yaml.safe_load(config_file)
 
-    # Get repo name
-    git_repo = git.Repo(__file__, search_parent_directories=True)
-    repo = git_repo.git.rev_parse("--show-toplevel")
+    return config
 
-    paths = {"repo": repo, "base":{}, "src":{}, "data":{}, "app":{}}
 
-    for base_dir in ["data", "notebooks", "src", "model", "logs", "app"]:
+if __name__ == "__main__":
+    conf = get_config()
 
-        paths["base"][base_dir] = os.path.join(repo, base_dir)
-        test = paths["base"][base_dir].split(base_dir)[-1]
-        assert len(test) == 0
-
-    for src_dir in ["conf", "data", "notebooks", "tests", "utils",
-                    "visualize", "conf", "model"]:
-
-        src_base_dir = paths.get("base").get("src")
-        paths["src"][src_dir] = os.path.join(src_base_dir, src_dir)
-        test = paths["src"][src_dir].split(src_dir)[-1]
-        assert len(test) == 0
-
-    for data_dir in ["raw", "interim", "processed"]:
-
-        data_base_dir = paths.get("base").get("data")
-        paths["data"][data_dir] = os.path.join(data_base_dir, data_dir)
-        test = paths["data"][data_dir].split(data_dir)[-1]
-        assert len(test) == 0
-
-    for app_dir in ["templates", "static"]:
-        app_base_dir = paths.get("base").get("app")
-        paths["app"][app_dir] = os.path.join(app_base_dir, app_dir)
-
-    return paths
+    print("end")
