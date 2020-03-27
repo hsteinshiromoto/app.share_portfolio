@@ -33,14 +33,29 @@ PATH_DATA_RAW = PATH_DATA / "raw"
 # src https://github.com/pydata/pandas-datareader/issues/44
 
 def get_data(portfolio: list, start_date: datetime=None,
-             end_date: datetime=None):
+             end_date: datetime=None) -> pd.DataFrame:
     """
     Get price values from source
 
-    :param portfolio:
-    :param start_date:
-    :param end_date:
-    :return: pandas.DataFrame
+    Args:
+        portfolio:
+        start_date:
+        end_date:
+
+    Returns:
+        pd.DataFrame
+
+    Examples:
+        Examples should be written in doctest format, and should illustrate how
+        to use the function.
+
+        >>> portfolio = ["IVV", "NDQ"]
+        >>> df = get_data(portfolio)
+        >>> df.empty
+        False
+        >>> set(df["Symbol"].drop_duplicates()) == set(portfolio)
+        True
+
     """
 
     if os.getenv("ALPHAVANTAGE_API_KEY") is not None:
@@ -67,7 +82,7 @@ def get_data(portfolio: list, start_date: datetime=None,
 
     for stock in portfolio:
 
-        print(f"Getting stock {stock}")
+        # print(f"Getting stock {stock}")
 
         time_start = datetime.now()
         data, meta_data = ts.get_daily(symbol=stock, outputsize='full')
@@ -86,8 +101,8 @@ def get_data(portfolio: list, start_date: datetime=None,
 
         time_diff = datetime.now() - time_start
         if time_diff.seconds <= 60:
-            print(f"Waiting {60 - time_diff.seconds} seconds for next iteration "
-                  f"...")
+            # print(f"Waiting {60 - time_diff.seconds} seconds for next iteration "
+            #       f"...")
             time.sleep(60 - time_diff.seconds)
 
     if start_date:
@@ -129,36 +144,36 @@ def input_data(data, missing_values_tolerance=5.0):
     return data
 
 
-def load_previous_dataset(filename=None, path=None):
-    # For future use
-    """
-    Get the latest date of the existing dataset
-
-    :param filename: str., optional
-    :param path: str., optional
-
-    :return date: datetime
-    """
-
-    if not path:
-        paths = get_paths()
-        path = paths.get("data").get("interim")
-
-    try:
-        if not filename:
-            filename = get_file(path, pattern=None, extension=".csv", latest=True)
-
-    except IOError:
-        msg = "Expected data set in {}. Found none.".format(path)
-        warnings.warn(msg)
-        data = None
-
-    else:
-        full_filename = os.path.join(path, filename)
-        data = pd.read_csv(full_filename, index_col=0, header=[0,1])
-        data.index = pd.to_datetime(data.index)
-
-    return data
+# def load_previous_dataset(filename=None, path=None):
+#     # For future use
+#     """
+#     Get the latest date of the existing dataset
+#
+#     :param filename: str., optional
+#     :param path: str., optional
+#
+#     :return date: datetime
+#     """
+#
+#     if not path:
+#         paths = get_paths()
+#         path = paths.get("data").get("interim")
+#
+#     try:
+#         if not filename:
+#             filename = get_file(path, pattern=None, extension=".csv", latest=True)
+#
+#     except IOError:
+#         msg = "Expected data set in {}. Found none.".format(path)
+#         warnings.warn(msg)
+#         data = None
+#
+#     else:
+#         full_filename = os.path.join(path, filename)
+#         data = pd.read_csv(full_filename, index_col=0, header=[0,1])
+#         data.index = pd.to_datetime(data.index)
+#
+#     return data
 
 
 def save_data(data: pd.DataFrame, filename: str="raw.csv",
