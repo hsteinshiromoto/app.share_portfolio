@@ -11,6 +11,8 @@
 *.pyc
 *.csv
 
+sandbox/*
+
 
 src/__pycache__/*
 src/data/__pycache__/*
