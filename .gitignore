@@ -9,6 +9,7 @@
 .selected_editor
 .viminfo
 *.pyc
+*.csv
 
 
 src/__pycache__/*
