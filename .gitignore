@@ -8,6 +8,7 @@
 .python_history
 .selected_editor
 .viminfo
+*.pyc
 
 
 src/__pycache__/*
