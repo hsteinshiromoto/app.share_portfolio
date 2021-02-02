@@ -50,6 +50,7 @@ def get_stock_data(stock: str):
         True
         >>> data["Symbol"].drop_duplicates()[0] == stock
         True
+        >>> print(data)
     """
 
     if not os.getenv("ALPHAVANTAGE_API_KEY"):
@@ -57,11 +58,14 @@ def get_stock_data(stock: str):
                                f"ALPHAVANTAGE_API_KEY. Got "
                                f"{type(os.getenv('ALPHAVANTAGE_API_KEY'))}.")
 
+    # 1. Instantiate time series object from alpha vantage
     ts = TimeSeries(key=os.getenv("ALPHAVANTAGE_API_KEY"),
                     output_format="pandas", indexing_type='date')
 
+    # 2. Get stock
     data, meta_data = ts.get_daily(symbol=stock, outputsize='full')
-    data.reset_index(inplace=True)
+
+    # 3. Format column names
     data.rename(columns={column: column[3:].capitalize() if column != "date"
                 else "Date" for column in data.columns.values}, inplace=True
                 )
