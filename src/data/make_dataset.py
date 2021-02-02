@@ -2,7 +2,7 @@
 # Import
 # ---
 
-# Infrastructure Modules
+
 import os
 import time
 import warnings
@@ -10,12 +10,10 @@ from datetime import datetime
 from glob import glob
 from pathlib import Path
 
-# Data Manipulation Modules
 import pandas as pd
-# Data Source Modules
 from alpha_vantage.timeseries import TimeSeries
-# Scripts
 from src.base import get_file
+from typeguard import typechecked
 
 # ---
 # Global Definitions
@@ -23,14 +21,15 @@ from src.base import get_file
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
 PATH_DATA = PROJECT_ROOT / "data"
 PATH_DATA_RAW = PATH_DATA / "raw"
+
 # ---
 # Functions and classes
 # ---
 
-# Todo: Get real time quote:
+#!TODO: Get real time quote:
 # src https://github.com/pydata/pandas-datareader/issues/44
 
-
+@typechecked
 def get_stock_data(stock: str) -> pd.DataFrame:
     """
     Get data from a specific stock
