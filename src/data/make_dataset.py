@@ -50,7 +50,6 @@ def get_stock_data(stock: str):
         True
         >>> data["Symbol"].drop_duplicates()[0] == stock
         True
-        >>> print(data)
     """
 
     if not os.getenv("ALPHAVANTAGE_API_KEY"):
