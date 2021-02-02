@@ -12,7 +12,6 @@ from pathlib import Path
 
 import pandas as pd
 from alpha_vantage.timeseries import TimeSeries
-from src.base import get_file
 from typeguard import typechecked
 
 # ---
