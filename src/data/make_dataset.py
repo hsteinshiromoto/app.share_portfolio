@@ -33,12 +33,15 @@ PATH_DATA_RAW = PATH_DATA / "raw"
 # src https://github.com/pydata/pandas-datareader/issues/44
 
 
-def get_stock_data(stock: str):
+def get_stock_data(stock: str) -> pd.DataFrame:
     """
     Get data from a specific stock
 
     Args:
         stock (str): Stock symbol
+
+    Returns:
+        data (pd.DataFrame): Stock data
 
     Raises:
         EnvironmentError: Undefined API key
