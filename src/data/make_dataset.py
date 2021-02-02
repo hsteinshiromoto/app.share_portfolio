@@ -28,6 +28,7 @@ PATH_DATA_RAW = PATH_DATA / "raw"
 #!TODO: Get real time quote:
 # src https://github.com/pydata/pandas-datareader/issues/44
 
+
 @typechecked
 def get_stock_data(stock: str) -> pd.DataFrame:
     """
@@ -203,22 +204,22 @@ def main(portfolio):
     """
     Get stock prices 
     """
-    data = get_data(portfolio)
+    # data = get_data(portfolio)
 
     """
     Clean data
     """
-    data = input_data(data)
+    # data = input_data(data)
 
     """
     Return/save the data
     """
 
-    timestamp = str(datetime.now().date())
-    save_data(data, as_new_file=True)
+    # timestamp = str(datetime.now().date())
+    # save_data(data, as_new_file=True)
     # save_data(data, filename=None, path=None)
 
-    return data
+    pass
 
 
 if __name__ == "__main__":
