@@ -75,88 +75,40 @@ def get_stock_data(stock: str) -> pd.DataFrame:
     return data
 
 
-def get_data(portfolio: list, start_date: datetime=None,
-             end_date: datetime=None) -> pd.DataFrame:
-    """
-    Get price values from source
+@typechecked
+def get_portfolio(portfolio: list[str]) -> pd.DataFrame:
+    """Get stocks info
 
     Args:
-        portfolio:
-        start_date:
-        end_date:
+        portfolio (list[str]): List of symbols
 
     Returns:
-        pd.DataFrame
+        pd.DataFrame: [description]
 
-    Examples:
-        Examples should be written in doctest format, and should illustrate how
-        to use the function.
-
-        >>> portfolio = ["IVV", "NDQ"]
-        >>> df = get_data(portfolio)
-        >>> df.empty
-        False
-        >>> set(df["Symbol"].drop_duplicates()) == set(portfolio)
+    Example:
+        >>> portfolio = ["IVV", "CSL"]
+        >>> data = get_portfolio(portfolio)
+        >>> isinstance(data, pd.DataFrame)
         True
-
+        >>> len(set(data["Symbol"].drop_duplicates().values).symmetric_difference(set(portfolio))) == 0
+        True
     """
-
-    if os.getenv("ALPHAVANTAGE_API_KEY") is not None:
-        ts = TimeSeries(key=os.getenv("ALPHAVANTAGE_API_KEY"),
-                        output_format="pandas", indexing_type='date')
-
-    else:
-        raise EnvironmentError(f"Expected environment variable "
-                               f"ALPHAVANTAGE_API_KEY. Got "
-                               f"{type(os.getenv('ALPHAVANTAGE_API_KEY'))}.")
-
-    try:
-        if end_date < start_date:
-            msg = f"Expected start_date to be larger than end_date. " \
-                  f"Got end_date={end_date} < start_date={start_date}."
-            raise ValueError(msg)
-
-    except TypeError:
-        if (start_date == None) or (end_date == None):
-            pass
-
-        else:
-            raise
-
+    # Iterate over each stock
     for stock in portfolio:
-
-        # print(f"Getting stock {stock}")
-
         time_start = datetime.now()
-        data, meta_data = ts.get_daily(symbol=stock, outputsize='full')
-        data.reset_index(inplace=True)
-        data.rename(
-            columns={column: column[3:].capitalize() if column != "date"
-            else "Date" for column in data.columns.values},
-            inplace=True)
-        data["Symbol"] = stock
 
         try:
-            df = df.append(data)
+            data = pd.concat([data, get_stock_data(stock)])
 
         except NameError:
-            df = data.copy()
-
+            data = get_stock_data(stock)
+        
         time_diff = datetime.now() - time_start
-        if time_diff.seconds <= 60:
-            # print(f"Waiting {60 - time_diff.seconds} seconds for next iteration "
-            #       f"...")
-            time.sleep(60 - time_diff.seconds)
+        if time_diff.seconds <= 61:
+            # Wait, at least, 60s to get the next stock
+            time.sleep(61 - time_diff.seconds)
 
-    if start_date:
-        mask_start_date = df["Date"] >= start_date
-        df = df.loc[mask_start_date, :]
-
-    if end_date:
-        mask_end_date = df["Date"] <= end_date
-        df = df.loc[mask_end_date, :]
-
-    return df
+    return data
 
 
 def input_data(data, missing_values_tolerance=5.0):
