@@ -111,6 +111,40 @@ def get_portfolio(portfolio: list[str]) -> pd.DataFrame:
     return data
 
 
+@typechecked
+def get_momentum(data: pd.DataFrame, metric: str="Close", short_term: int=30,
+                long_term: int=90) -> pd.DataFrame:
+    """Calculate the Exponential Weighted Mean (EWM) of a given metric
+
+    Args:
+        data (pd.DataFrame): Data frame containing prices
+        metric (str, optional): Metric to be used to calculate the EWM. Defaults to "Close".
+        short_term (int, optional): Number of days in short term momentum. Defaults to 30.
+        long_term (int, optional): Number of days in long term momentum. Defaults to 90.
+
+    Raises:
+        ValueError: long_term must be larger than short_term 
+        KeyError: Expected metric to be either Open, Close, High or Low
+
+    Returns:
+        pd.DataFrame: Data frame with 
+    """
+
+    if short_term >= long_term:
+        msg = f"Expected short_term < long_term. Got {short_term} >= {long_term}."
+        raise ValueError(msg)
+
+    try:
+        data[f"Short_Term_{metric}"] = data[metric].ewm(span=short_term, adjust=False).mean()
+        data[f"Long_Term_{metric}"] = data[metric].ewm(span=long_term, adjust=False).mean()
+
+    except KeyError:
+        msg = f"Expected metric to be either Open, Close, High or Low. Got {metric}."
+        raise KeyError(msg)
+
+    return data
+
+
 def input_data(data, missing_values_tolerance=5.0):
     # Todo: Create a config file and define missing_values_tolerance there
     """
