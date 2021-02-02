@@ -2,20 +2,18 @@
 # Import
 # ---
 
-# Data Source Modules
-from alpha_vantage.timeseries import TimeSeries
+# Infrastructure Modules
+import os
+import time
+import warnings
+from datetime import datetime
+from glob import glob
+from pathlib import Path
 
 # Data Manipulation Modules
 import pandas as pd
-
-# Infrastructure Modules
-import os
-import warnings
-from pathlib import Path
-from datetime import datetime
-import time
-from glob import glob
-
+# Data Source Modules
+from alpha_vantage.timeseries import TimeSeries
 # Scripts
 from src.base import get_file
 
