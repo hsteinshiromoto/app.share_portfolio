@@ -70,6 +70,8 @@ def get_stock_data(stock: str) -> pd.DataFrame:
                 )
     data["Symbol"] = stock
 
+    data.index.name = 'Date'
+
     return data
 
 
